@@ -50,4 +50,8 @@ class Alumno extends Persona {
     public double calcularPromedioFinal() {
         return (calificacionParcial1 + calificacionParcial2 + calificacionParcial3) / 3;
     }
+
+    public String toCSVString() {
+        return numeroLista + "," + nombre + "," + calificacionParcial1 + "," + calificacionParcial2 + "," + calificacionParcial3;
+    }
 }

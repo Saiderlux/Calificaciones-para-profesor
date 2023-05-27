@@ -4,8 +4,19 @@
  */
 package calificaciones;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Scanner;
+
 class Grupo {
+
     private String nombreArchivo;
     private ArrayList<Alumno> listaAlumnos;
 
@@ -58,36 +69,33 @@ class Grupo {
             System.out.println("Calificación Parcial 2: " + alumno.getCalificacionParcial2());
             System.out.println("Calificación Parcial 3: " + alumno.getCalificacionParcial3());
             System.out.println("Promedio Final: " + alumno.calcularPromedioFinal());
-        } else {
-            System.out.println("No se encontró ningún alumno con el número de lista proporcionado.");
         }
     }
 
-    public void consultarListaPorParcial(int numeroParcial) {
-        System.out.println("Lista de alumnos con calificación del Parcial " + numeroParcial + ":");
+    public void consultarAlumnosPorParcial(int numeroParcial) {
+        System.out.println("Lista de alumnos con calificación en el Parcial " + numeroParcial + ":");
         for (Alumno alumno : listaAlumnos) {
-            double calificacionParcial = 0;
+            double calificacion = 0;
             switch (numeroParcial) {
                 case 1:
-                    calificacionParcial = alumno.getCalificacionParcial1();
+                    calificacion = alumno.getCalificacionParcial1();
                     break;
                 case 2:
-                    calificacionParcial = alumno.getCalificacionParcial2();
+                    calificacion = alumno.getCalificacionParcial2();
                     break;
                 case 3:
-                    calificacionParcial = alumno.getCalificacionParcial3();
+                    calificacion = alumno.getCalificacionParcial3();
                     break;
                 default:
                     System.out.println("Número de parcial inválido.");
                     return;
             }
-            System.out.println("Número de lista: " + alumno.getNumeroLista() + ", Nombre: " + alumno.getNombre() +
-                    ", Calificación Parcial " + numeroParcial + ": " + calificacionParcial);
+            System.out.println("Número de lista: " + alumno.getNumeroLista() + ", Calificación: " + calificacion);
         }
     }
 
-    public void consultarListaCompleta() {
-        System.out.println("Lista completa de alumnos:");
+    public void consultarAlumnosConCalificaciones() {
+        System.out.println("Lista de alumnos con todas las calificaciones:");
         for (Alumno alumno : listaAlumnos) {
             System.out.println("Número de lista: " + alumno.getNumeroLista());
             System.out.println("Nombre: " + alumno.getNombre());
@@ -95,7 +103,33 @@ class Grupo {
             System.out.println("Calificación Parcial 2: " + alumno.getCalificacionParcial2());
             System.out.println("Calificación Parcial 3: " + alumno.getCalificacionParcial3());
             System.out.println("Promedio Final: " + alumno.calcularPromedioFinal());
-            System.out.println("-------------------------------------");
+            System.out.println();
+        }
+    }
+
+    public void consultarAlumnosAprobados() {
+        System.out.println("Lista de alumnos aprobados:");
+        for (Alumno alumno : listaAlumnos) {
+            double promedioFinal = alumno.calcularPromedioFinal();
+            if (promedioFinal >= 6) {
+                System.out.println("Número de lista: " + alumno.getNumeroLista());
+                System.out.println("Nombre: " + alumno.getNombre());
+                System.out.println("Promedio Final: " + promedioFinal);
+                System.out.println();
+            }
+        }
+    }
+
+    public void consultarAlumnosReprobados() {
+        System.out.println("Lista de alumnos reprobados:");
+        for (Alumno alumno : listaAlumnos) {
+            double promedioFinal = alumno.calcularPromedioFinal();
+            if (promedioFinal < 6) {
+                System.out.println("Número de lista: " + alumno.getNumeroLista());
+                System.out.println("Nombre: " + alumno.getNombre());
+                System.out.println("Promedio Final: " + promedioFinal);
+                System.out.println();
+            }
         }
     }
 
@@ -107,4 +141,33 @@ class Grupo {
         }
         return null;
     }
+
+    public void guardarDatos() {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(nombreArchivo))) {
+            for (Alumno alumno : listaAlumnos) {
+                writer.println(alumno.toCSVString());
+            }
+        } catch (IOException e) {
+            System.out.println("Error al guardar los datos del grupo.");
+        }
+    }
+
+    public void cargarDatos() throws FileNotFoundException {
+        try (Scanner scanner = new Scanner(new File(nombreArchivo))) {
+            while (scanner.hasNextLine()) {
+                String[] datos = scanner.nextLine().split(",");
+                int numeroLista = Integer.parseInt(datos[0]);
+                String nombre = datos[1];
+                double calificacionParcial1 = Double.parseDouble(datos[2]);
+                double calificacionParcial2 = Double.parseDouble(datos[3]);
+                double calificacionParcial3 = Double.parseDouble(datos[4]);
+
+                Alumno alumno = new Alumno(numeroLista, nombre);
+                alumno.setCalificacionParcial1(calificacionParcial1);
+                alumno.setCalificacionParcial2(calificacionParcial2);
+                alumno.setCalificacionParcial3(calificacionParcial3);
+
+                listaAlumnos.add(alumno);
+            }
+        }    }
 }

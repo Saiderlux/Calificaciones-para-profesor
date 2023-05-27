@@ -16,4 +16,8 @@ class Profesor extends Persona {
     public String getMateria() {
         return materia;
     }
+
+    public String toCSVString() {
+        return nombre + "," + materia;
+    }
 }
