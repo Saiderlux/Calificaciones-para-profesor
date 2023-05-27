@@ -10,7 +10,7 @@ import java.util.List;
 
 class Grupo {
 
-    private String nombreGrupo;
+    String nombreGrupo;
     private List<Alumno> alumnos;
 
     public Grupo(String nombreGrupo) {
