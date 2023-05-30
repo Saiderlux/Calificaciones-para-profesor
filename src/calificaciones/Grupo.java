@@ -10,41 +10,37 @@ import java.util.List;
 
 class Grupo {
 
-    String nombreGrupo;
+    private String nombre;
     private List<Alumno> alumnos;
 
-    public Grupo(String nombreGrupo) {
-        this.nombreGrupo = nombreGrupo;
+    public Grupo(String nombre) {
+        this.nombre = nombre;
         this.alumnos = new ArrayList<>();
     }
 
-    public String getNombreGrupo() {
-        return nombreGrupo;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public void setAlumnos(List<Alumno> alumnos) {
+        this.alumnos = alumnos;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public List<Alumno> getAlumnos() {
+        return alumnos;
     }
 
     public void agregarAlumno(Alumno alumno) {
         alumnos.add(alumno);
     }
 
-    public void eliminarAlumno(int numeroLista) {
-        for (Alumno alumno : alumnos) {
-            if (alumno.getNumeroLista() == numeroLista) {
-                alumnos.remove(alumno);
-                break;
-            }
-        }
+    public void eliminarAlumno(Alumno alumno) {
+        alumnos.remove(alumno);
     }
 
-    public Alumno buscarAlumno(int numeroLista) {
-        for (Alumno alumno : alumnos) {
-            if (alumno.getNumeroLista() == numeroLista) {
-                return alumno;
-            }
-        }
-        return null;
-    }
-
-    public List<Alumno> obtenerAlumnos() {
-        return alumnos;
-    }
+   
 }

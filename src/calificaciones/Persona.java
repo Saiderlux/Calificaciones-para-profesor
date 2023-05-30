@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
  */
 package calificaciones;
-// Clase base para representar a una persona
+// Clase Persona
 
 class Persona {
 
@@ -23,8 +23,11 @@ class Persona {
         return apellido;
     }
 
-    @Override
-    public String toString() {
-        return nombre + " " + apellido;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
     }
 }

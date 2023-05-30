@@ -17,4 +17,8 @@ class Profesor extends Persona {
     public String getMateria() {
         return materia;
     }
+
+    public void setMateria(String materia) {
+        this.materia = materia;
+    }
 }

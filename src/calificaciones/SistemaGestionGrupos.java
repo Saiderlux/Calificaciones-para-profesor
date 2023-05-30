@@ -13,8 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 class SistemaGestionGrupos {
-    private static final String RUTA_ARCHIVO_PROFESOR = "profesor.txt";
-    private static final String RUTA_ARCHIVO_GRUPOS = "grupos.txt";
 
     private Profesor profesor;
     private List<Grupo> grupos;
@@ -26,71 +24,133 @@ class SistemaGestionGrupos {
 
     public void altaProfesor(String nombre, String apellido, String materia) {
         profesor = new Profesor(nombre, apellido, materia);
-        guardarProfesor();
+        // Guardar los datos del profesor en un archivo
+        try {
+            FileWriter writer = new FileWriter("profesor.txt");
+            writer.write(profesor.getNombre() + "," + profesor.getApellido() + "," + profesor.getMateria());
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Error al guardar los datos del profesor.");
+        }
     }
 
     public void bajaProfesor() {
         profesor = null;
-        eliminarArchivoProfesor();
+        // Eliminar el archivo que contiene los datos del profesor
+        File file = new File("profesor.txt");
+        if (file.exists()) {
+            file.delete();
+        }
     }
 
-    public void altaGrupo(String nombreGrupo) {
-        Grupo grupo = new Grupo(nombreGrupo);
+    public void editarProfesor(String nombre, String apellido, String materia) {
+        if (profesor != null) {
+            profesor.setNombre(nombre);
+            profesor.setApellido(apellido);
+            profesor.setMateria(materia);
+            // Actualizar los datos del profesor en el archivo
+            try {
+                FileWriter writer = new FileWriter("profesor.txt");
+                writer.write(profesor.getNombre() + "," + profesor.getApellido() + "," + profesor.getMateria());
+                writer.close();
+            } catch (IOException e) {
+                System.out.println("Error al actualizar los datos del profesor.");
+            }
+        }
+    }
+
+    public void altaGrupo(String nombre) {
+        Grupo grupo = new Grupo(nombre);
         grupos.add(grupo);
-        guardarGrupos();
+        // Crear un archivo para el grupo
+        try {
+            FileWriter writer = new FileWriter(nombre + ".txt");
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Error al crear el archivo del grupo.");
+        }
     }
 
-    public void bajaGrupo(String nombreGrupo) {
-        for (Grupo grupo : grupos) {
-            if (grupo.getNombreGrupo().equals(nombreGrupo)) {
-                grupos.remove(grupo);
-                break;
+    public void bajaGrupo(String nombre) {
+        Grupo grupo = buscarGrupo(nombre);
+        if (grupo != null) {
+            grupos.remove(grupo);
+            // Eliminar el archivo del grupo
+            File file = new File(nombre + ".txt");
+            if (file.exists()) {
+                file.delete();
             }
         }
-        guardarGrupos();
-        eliminarArchivoGrupo(nombreGrupo);
     }
 
-    public void modificarGrupo(String nombreGrupo, String nuevoNombreGrupo) {
-        for (Grupo grupo : grupos) {
-            if (grupo.getNombreGrupo().equals(nombreGrupo)) {
-                grupo.nombreGrupo = nuevoNombreGrupo;
-                break;
+    public void editarGrupo(String nombre, String nuevoNombre) {
+        Grupo grupo = buscarGrupo(nombre);
+        if (grupo != null) {
+            grupo.setNombre(nuevoNombre); 
+            // Renombrar el archivo del grupo
+            File file = new File(nombre + ".txt");
+            if (file.exists()) {
+                file.renameTo(new File(nuevoNombre + ".txt"));
             }
         }
-        guardarGrupos();
-        renombrarArchivoGrupo(nombreGrupo, nuevoNombreGrupo);
+    }
+
+    public void consultarGrupo(String nombre) {
+        Grupo grupo = buscarGrupo(nombre);
+        if (grupo != null) {
+            System.out.println("Nombre del grupo: " + grupo.getNombre());
+            System.out.println("Alumnos:");
+            for (Alumno alumno : grupo.getAlumnos()) {
+                System.out.println("- Nombre: " + alumno.getNombre() + " " + alumno.getApellido());
+                System.out.println("  Número de lista: " + alumno.getNumeroLista());
+                System.out.println("  Parcial 1: " + alumno.getParcial1());
+                System.out.println("  Parcial 2: " + alumno.getParcial2());
+                System.out.println("  Parcial 3: " + alumno.getParcial3());
+                System.out.println("  Promedio final: " + alumno.getPromedioFinal());
+            }
+        } else {
+            System.out.println("El grupo no existe.");
+        }
     }
 
     public void altaAlumno(String nombreGrupo, String nombre, String apellido, int numeroLista) {
-        Alumno alumno = new Alumno(nombre, apellido, numeroLista);
-        Grupo grupo = obtenerGrupo(nombreGrupo);
+        Grupo grupo = buscarGrupo(nombreGrupo);
         if (grupo != null) {
+            Alumno alumno = new Alumno(nombre, apellido, numeroLista);
             grupo.agregarAlumno(alumno);
-            guardarAlumnos(nombreGrupo, grupo);
+            // Guardar los datos del alumno en el archivo del grupo
+            try {
+                FileWriter writer = new FileWriter(nombreGrupo + ".txt", true);
+                writer.write(alumno.getNumeroLista() + "," + alumno.getNombre() + "," + alumno.getApellido()
+                        + "," + alumno.getParcial1() + "," + alumno.getParcial2() + ","
+                        + alumno.getParcial3() + "," + alumno.getPromedioFinal() + "\n");
+                writer.close();
+            } catch (IOException e) {
+                System.out.println("Error al guardar los datos del alumno.");
+            }
         } else {
             System.out.println("El grupo no existe.");
         }
     }
 
     public void bajaAlumno(String nombreGrupo, int numeroLista) {
-        Grupo grupo = obtenerGrupo(nombreGrupo);
+        Grupo grupo = buscarGrupo(nombreGrupo);
         if (grupo != null) {
-            grupo.eliminarAlumno(numeroLista);
-            guardarAlumnos(nombreGrupo, grupo);
-        } else {
-            System.out.println("El grupo no existe.");
-        }
-    }
-
-    public void modificarAlumno(String nombreGrupo, int numeroLista, String nombre, String apellido) {
-        Grupo grupo = obtenerGrupo(nombreGrupo);
-        if (grupo != null) {
-            Alumno alumno = grupo.buscarAlumno(numeroLista);
+            Alumno alumno = buscarAlumno(grupo, numeroLista);
             if (alumno != null) {
-                alumno.nombre = nombre;
-                alumno.apellido = apellido;
-                guardarAlumnos(nombreGrupo, grupo);
+                grupo.eliminarAlumno(alumno);
+                // Actualizar el archivo del grupo sin el alumno eliminado
+                try {
+                    FileWriter writer = new FileWriter(nombreGrupo + ".txt");
+                    for (Alumno a : grupo.getAlumnos()) {
+                        writer.write(a.getNumeroLista() + "," + a.getNombre() + "," + a.getApellido()
+                                + "," + a.getParcial1() + "," + a.getParcial2() + ","
+                                + a.getParcial3() + "," + a.getPromedioFinal() + "\n");
+                    }
+                    writer.close();
+                } catch (IOException e) {
+                    System.out.println("Error al actualizar los datos del grupo.");
+                }
             } else {
                 System.out.println("El alumno no existe en el grupo.");
             }
@@ -99,157 +159,125 @@ class SistemaGestionGrupos {
         }
     }
 
-    public void consultarGrupo(String nombreGrupo) {
-        Grupo grupo = obtenerGrupo(nombreGrupo);
+    public void editarAlumno(String nombreGrupo, int numeroLista, double parcial1, double parcial2, double parcial3) {
+        Grupo grupo = buscarGrupo(nombreGrupo);
         if (grupo != null) {
-            List<Alumno> alumnos = grupo.obtenerAlumnos();
-            if (!alumnos.isEmpty()) {
-                System.out.println("Nombre del grupo: " + grupo.getNombreGrupo());
-                System.out.println("Profesor: " + profesor.getNombre() + " " + profesor.getApellido());
-                System.out.println("Materia: " + profesor.getMateria());
-                System.out.println("Cantidad de alumnos: " + alumnos.size());
-                System.out.println("----------------------------");
-                System.out.println("Opciones de consulta:");
-                System.out.println("1. Consultar lista con la calificación del primer parcial");
-                System.out.println("2. Consultar lista con la calificación del segundo parcial");
-                System.out.println("3. Consultar lista con la calificación del tercer parcial");
-                System.out.println("4. Consultar lista con todas las calificaciones");
-                System.out.println("5. Consultar lista de alumnos reprobados");
-                System.out.println("6. Consultar lista de alumnos aprobados");
-                System.out.println("----------------------------");
-            } else {
-                System.out.println("El grupo no tiene alumnos.");
-            }
-        } else {
-            System.out.println("El grupo no existe.");
-        }
-    }
-
-    public void consultarLista(String nombreGrupo, int opcion) {
-        Grupo grupo = obtenerGrupo(nombreGrupo);
-        if (grupo != null) {
-            List<Alumno> alumnos = grupo.obtenerAlumnos();
-            if (!alumnos.isEmpty()) {
-                System.out.println("Nombre del grupo: " + grupo.getNombreGrupo());
-                System.out.println("Profesor: " + profesor.getNombre() + " " + profesor.getApellido());
-                System.out.println("Materia: " + profesor.getMateria());
-                System.out.println("----------------------------");
-                switch (opcion) {
-                    case 1:
-                        System.out.println("Calificación del primer parcial:");
-                        for (Alumno alumno : alumnos) {
-                            System.out.println("Número de lista: " + alumno.getNumeroLista() + ", Calificación: " + alumno.getCalificacion1());
-                        }
-                        break;
-                    case 2:
-                        System.out.println("Calificación del segundo parcial:");
-                        for (Alumno alumno : alumnos) {
-                            System.out.println("Número de lista: " + alumno.getNumeroLista() + ", Calificación: " + alumno.getCalificacion2());
-                        }
-                        break;
-                    case 3:
-                        System.out.println("Calificación del tercer parcial:");
-                        for (Alumno alumno : alumnos) {
-                            System.out.println("Número de lista: " + alumno.getNumeroLista() + ", Calificación: " + alumno.getCalificacion3());
-                        }
-                        break;
-                    case 4:
-                        System.out.println("Todas las calificaciones:");
-                        for (Alumno alumno : alumnos) {
-                            System.out.println(alumno.toString());
-                            System.out.println("-----------------------------");
-                        }
-                        break;
-                    case 5:
-                        System.out.println("Alumnos reprobados:");
-                        for (Alumno alumno : alumnos) {
-                            if (alumno.calcularPromedio() < 6) {
-                                System.out.println(alumno.toString());
-                                System.out.println("-----------------------------");
-                            }
-                        }
-                        break;
-                    case 6:
-                        System.out.println("Alumnos aprobados:");
-                        for (Alumno alumno : alumnos) {
-                            if (alumno.calcularPromedio() >= 6) {
-                                System.out.println(alumno.toString());
-                                System.out.println("-----------------------------");
-                            }
-                        }
-                        break;
-                    default:
-                        System.out.println("Opción inválida.");
+            Alumno alumno = buscarAlumno(grupo, numeroLista);
+            if (alumno != null) {
+                alumno.setParcial1(parcial1);
+                alumno.setParcial2(parcial2);
+                alumno.setParcial3(parcial3);
+                double promedioFinal = (parcial1 + parcial2 + parcial3) / 3;
+                alumno.setPromedioFinal(promedioFinal);
+                // Actualizar los datos del alumno en el archivo del grupo
+                try {
+                    FileWriter writer = new FileWriter(nombreGrupo + ".txt");
+                    for (Alumno a : grupo.getAlumnos()) {
+                        writer.write(a.getNumeroLista() + "," + a.getNombre() + "," + a.getApellido()
+                                + "," + a.getParcial1() + "," + a.getParcial2() + ","
+                                + a.getParcial3() + "," + a.getPromedioFinal() + "\n");
+                    }
+                    writer.close();
+                } catch (IOException e) {
+                    System.out.println("Error al actualizar los datos del grupo.");
                 }
             } else {
-                System.out.println("El grupo no tiene alumnos.");
+                System.out.println("El alumno no existe en el grupo.");
             }
         } else {
             System.out.println("El grupo no existe.");
         }
     }
 
-    private Grupo obtenerGrupo(String nombreGrupo) {
+    public void consultarCalificacionesParcial(String nombreGrupo, int parcial) {
+        Grupo grupo = buscarGrupo(nombreGrupo);
+        if (grupo != null) {
+            System.out.println("Calificaciones del parcial " + parcial + " del grupo " + grupo.getNombre() + ":");
+            for (Alumno alumno : grupo.getAlumnos()) {
+                double calificacionParcial;
+                switch (parcial) {
+                    case 1:
+                        calificacionParcial = alumno.getParcial1();
+                        break;
+                    case 2:
+                        calificacionParcial = alumno.getParcial2();
+                        break;
+                    case 3:
+                        calificacionParcial = alumno.getParcial3();
+                        break;
+                    default:
+                        calificacionParcial = 0;
+                }
+                System.out.println("- Alumno: " + alumno.getNombre() + " " + alumno.getApellido());
+                System.out.println("  Número de lista: " + alumno.getNumeroLista());
+                System.out.println("  Calificación: " + calificacionParcial);
+            }
+        } else {
+            System.out.println("El grupo no existe.");
+        }
+    }
+
+    public void consultarCalificacionesFinales(String nombreGrupo) {
+        Grupo grupo = buscarGrupo(nombreGrupo);
+        if (grupo != null) {
+            System.out.println("Calificaciones finales del grupo " + grupo.getNombre() + ":");
+            for (Alumno alumno : grupo.getAlumnos()) {
+                System.out.println("- Alumno: " + alumno.getNombre() + " " + alumno.getApellido());
+                System.out.println("  Número de lista: " + alumno.getNumeroLista());
+                System.out.println("  Calificación final: " + alumno.getPromedioFinal());
+            }
+        } else {
+            System.out.println("El grupo no existe.");
+        }
+    }
+
+    public void consultarAlumnosReprobados(String nombreGrupo) {
+        Grupo grupo = buscarGrupo(nombreGrupo);
+        if (grupo != null) {
+            System.out.println("Alumnos reprobados del grupo " + grupo.getNombre() + ":");
+            for (Alumno alumno : grupo.getAlumnos()) {
+                if (alumno.getPromedioFinal() < 6) {
+                    System.out.println("- Alumno: " + alumno.getNombre() + " " + alumno.getApellido());
+                    System.out.println("  Número de lista: " + alumno.getNumeroLista());
+                    System.out.println("  Calificación final: " + alumno.getPromedioFinal());
+                }
+            }
+        } else {
+            System.out.println("El grupo no existe.");
+        }
+    }
+
+    public void consultarAlumnosAprobados(String nombreGrupo) {
+        Grupo grupo = buscarGrupo(nombreGrupo);
+        if (grupo != null) {
+            System.out.println("Alumnos aprobados del grupo " + grupo.getNombre() + ":");
+            for (Alumno alumno : grupo.getAlumnos()) {
+                if (alumno.getPromedioFinal() >= 6) {
+                    System.out.println("- Alumno: " + alumno.getNombre() + " " + alumno.getApellido());
+                    System.out.println("  Número de lista: " + alumno.getNumeroLista());
+                    System.out.println("  Calificación final: " + alumno.getPromedioFinal());
+                }
+            }
+        } else {
+            System.out.println("El grupo no existe.");
+        }
+    }
+
+    private Grupo buscarGrupo(String nombre) {
         for (Grupo grupo : grupos) {
-            if (grupo.getNombreGrupo().equals(nombreGrupo)) {
+            if (grupo.getNombre().equals(nombre)) {
                 return grupo;
             }
         }
         return null;
     }
 
-    private void guardarProfesor() {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(RUTA_ARCHIVO_PROFESOR))) {
-            writer.println(profesor.getNombre() + "," + profesor.getApellido() + "," + profesor.getMateria());
-        } catch (IOException e) {
-            System.out.println("Error al guardar los datos del profesor.");
-        }
-    }
-
-    private void eliminarArchivoProfesor() {
-        File archivo = new File(RUTA_ARCHIVO_PROFESOR);
-        if (archivo.exists()) {
-            archivo.delete();
-        }
-    }
-
-    private void guardarGrupos() {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(RUTA_ARCHIVO_GRUPOS))) {
-            for (Grupo grupo : grupos) {
-                writer.println(grupo.getNombreGrupo());
+    private Alumno buscarAlumno(Grupo grupo, int numeroLista) {
+        for (Alumno alumno : grupo.getAlumnos()) {
+            if (alumno.getNumeroLista() == numeroLista) {
+                return alumno;
             }
-        } catch (IOException e) {
-            System.out.println("Error al guardar los datos de los grupos.");
         }
-    }
-
-    private void eliminarArchivoGrupo(String nombreGrupo) {
-        File archivo = new File(nombreGrupo + ".txt");
-        if (archivo.exists()) {
-            archivo.delete();
-        }
-    }
-
-    private void renombrarArchivoGrupo(String nombreGrupo, String nuevoNombreGrupo) {
-        File archivoActual = new File(nombreGrupo + ".txt");
-        File archivoNuevo = new File(nuevoNombreGrupo + ".txt");
-        if (archivoActual.exists()) {
-            archivoActual.renameTo(archivoNuevo);
-        }
-    }
-
-    private void guardarAlumnos(String nombreGrupo, Grupo grupo) {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(nombreGrupo + ".txt"))) {
-            for (Alumno alumno : grupo.obtenerAlumnos()) {
-                writer.println(alumno.getNumeroLista() + "," +
-                        alumno.getNombre() + "," +
-                        alumno.getApellido() + "," +
-                        alumno.getCalificacion1() + "," +
-                        alumno.getCalificacion2() + "," +
-                        alumno.getCalificacion3());
-            }
-        } catch (IOException e) {
-            System.out.println("Error al guardar los datos de los alumnos.");
-        }
+        return null;
     }
 }
