@@ -57,6 +57,7 @@ public class Main {
                                 break;
                             case 2:
                                 sistema.bajaProfesor();
+                                System.out.println("**Profesor dado de baja**");
                                 break;
                             case 3:
                                 System.out.print("Ingrese el nuevo nombre del profesor: ");

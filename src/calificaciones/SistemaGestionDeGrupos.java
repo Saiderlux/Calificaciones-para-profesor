@@ -277,7 +277,7 @@ class SistemaGestionGrupos {
         String nombreArchivo = nombre + ".txt";
         File file = new File(nombreArchivo);
 
-        if (!file.exists()) {
+        if (file.exists()) {
             Grupo grupo = new Grupo(nombre);
             // Leer los datos del archivo y agregar los alumnos al grupo
             try {
@@ -307,8 +307,6 @@ class SistemaGestionGrupos {
             } catch (FileNotFoundException e) {
                 System.out.println("Error al leer el archivo del grupo.");
             }
-        }else{
-            System.out.println("El grupo no existe");
         }
 
         return null;
