@@ -4,10 +4,11 @@
  */
 package calificaciones;
 
-/**
- *
- * @author Ssaid
- */
-public class Persona {
-    
+class Persona {
+
+    protected String nombre;
+
+    public Persona(String nombre) {
+        this.nombre = nombre;
+    }
 }
