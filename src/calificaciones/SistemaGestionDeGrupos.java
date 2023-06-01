@@ -5,14 +5,16 @@
 package calificaciones;
 
 // Clase para gestionar los grupos y profesores
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -333,6 +335,45 @@ class SistemaGestionGrupos {
         }
     }
 
-    public void generarPDFCalificaciones(Grupo grupo) throws IOException {
+    public void generarArchivoTxt(String nombreGrupo) {
+        Grupo grupo = buscarGrupo(nombreGrupo);
+
+        if (grupo != null) {
+            String nombreArchivo = "calificaciones.txt";
+
+            try (PrintWriter writer = new PrintWriter(new FileWriter(nombreArchivo))) {
+                // Obtener la lista de alumnos y ordenarlos por número de lista
+                List<Alumno> alumnos = grupo.getAlumnos();
+                Collections.sort(alumnos, Comparator.comparingInt(Alumno::getNumeroLista));
+
+                // Definir el ancho fijo para cada campo
+                final int ANCHO_NUMERO = 15;
+                final int ANCHO_NOMBRE = 20;
+                final int ANCHO_APELLIDO = 20;
+                final int ANCHO_PARCIAL = 10;
+                final int ANCHO_PROMEDIO = 15;
+
+                // Escribir las calificaciones en el archivo
+                writer.printf("%-" + ANCHO_NUMERO + "s %-" + ANCHO_NOMBRE + "s %-" + ANCHO_APELLIDO + "s %-" + ANCHO_PARCIAL + "s %-" + ANCHO_PARCIAL + "s %-" + ANCHO_PARCIAL + "s %-" + ANCHO_PROMEDIO + "s%n",
+                        "Número de lista", "Nombre", "Apellido", "Parcial 1", "Parcial 2", "Parcial 3", "Promedio Final");
+                for (Alumno alumno : alumnos) {
+                    writer.printf("%-" + ANCHO_NUMERO + "d %-" + ANCHO_NOMBRE + "s %-" + ANCHO_APELLIDO + "s %-" + ANCHO_PARCIAL + ".2f %-" + ANCHO_PARCIAL + ".2f %-" + ANCHO_PARCIAL + ".2f %-" + ANCHO_PROMEDIO + ".2f%n",
+                            alumno.getNumeroLista(),
+                            alumno.getNombre(),
+                            alumno.getApellido(),
+                            alumno.getParcial1(),
+                            alumno.getParcial2(),
+                            alumno.getParcial3(),
+                            alumno.getPromedioFinal());
+                }
+
+                System.out.println("Archivo de calificaciones generado exitosamente.");
+            } catch (IOException e) {
+                System.out.println("Error al generar el archivo de calificaciones.");
+            }
+        } else {
+            System.out.println("El grupo no existe.");
+        }
     }
+
 }
