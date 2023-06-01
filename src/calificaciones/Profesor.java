@@ -3,14 +3,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package calificaciones;
-// Clase Profesor que hereda de Persona
 
 class Profesor extends Persona {
 
     private String materia;
 
-    public Profesor(String nombre, String apellido, String materia) {
-        super(nombre, apellido);
+    public Profesor(String nombre, String materia) {
+        super(nombre);
         this.materia = materia;
     }
 
@@ -21,4 +20,5 @@ class Profesor extends Persona {
     public void setMateria(String materia) {
         this.materia = materia;
     }
+
 }

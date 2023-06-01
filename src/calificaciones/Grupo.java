@@ -3,13 +3,16 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package calificaciones;
-// Clase Grupo que representa un grupo de estudiantes
 
 import java.util.ArrayList;
 import java.util.List;
 
-class Grupo {
-
+/**
+ *
+ * @author Ssaid
+ */
+public class Grupo {
+   
     private String nombre;
     private List<Alumno> alumnos;
 
@@ -18,29 +21,27 @@ class Grupo {
         this.alumnos = new ArrayList<>();
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void agregarAlumno(Alumno alumno) {
+        alumnos.add(alumno);
     }
 
-    public void setAlumnos(List<Alumno> alumnos) {
-        this.alumnos = alumnos;
-    }
+    // Métodos para consultar alumnos y calificaciones del grupo
 
     public String getNombre() {
         return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     public List<Alumno> getAlumnos() {
         return alumnos;
     }
 
-    public void agregarAlumno(Alumno alumno) {
-        alumnos.add(alumno);
+    public void setAlumnos(List<Alumno> alumnos) {
+        this.alumnos = alumnos;
     }
-
-    public void eliminarAlumno(Alumno alumno) {
-        alumnos.remove(alumno);
-    }
-
-   
+    
 }
+
