@@ -37,7 +37,7 @@ class Alumno extends Persona {
     }
 
     public double getPromedioFinal() {
-        return promedioFinal;
+        return (parcial1 + parcial2 + parcial3) / 3;
     }
 
     public void setParcial1(double parcial1) {

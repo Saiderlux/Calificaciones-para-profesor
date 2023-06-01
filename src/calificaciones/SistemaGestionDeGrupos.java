@@ -5,12 +5,16 @@
 package calificaciones;
 
 // Clase para gestionar los grupos y profesores
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 class SistemaGestionGrupos {
 
@@ -100,6 +104,31 @@ class SistemaGestionGrupos {
         if (grupo != null) {
             System.out.println("Nombre del grupo: " + grupo.getNombre());
             System.out.println("Alumnos:");
+            // Leer los datos de los alumnos desde el archivo del grupo
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(nombre + ".txt"));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] alumnoData = line.split(",");
+                    int numeroLista = Integer.parseInt(alumnoData[0]);
+                    String nombreAlumno = alumnoData[1];
+                    String apellidoAlumno = alumnoData[2];
+                    double parcial1 = Double.parseDouble(alumnoData[3]);
+                    double parcial2 = Double.parseDouble(alumnoData[4]);
+                    double parcial3 = Double.parseDouble(alumnoData[5]);
+                    double promedioFinal = Double.parseDouble(alumnoData[6]);
+                    Alumno alumno = new Alumno(nombreAlumno, apellidoAlumno, numeroLista);
+                    alumno.setParcial1(parcial1);
+                    alumno.setParcial2(parcial2);
+                    alumno.setParcial3(parcial3);
+                    alumno.setPromedioFinal(promedioFinal);
+                    grupo.agregarAlumno(alumno);
+                }
+                reader.close();
+            } catch (IOException e) {
+                System.out.println("Error al leer los datos del grupo.");
+            }
+
             for (Alumno alumno : grupo.getAlumnos()) {
                 System.out.println("- Nombre: " + alumno.getNombre() + " " + alumno.getApellido());
                 System.out.println("  Número de lista: " + alumno.getNumeroLista());
@@ -118,7 +147,7 @@ class SistemaGestionGrupos {
         if (grupo != null) {
             Alumno alumno = new Alumno(nombre, apellido, numeroLista);
             grupo.agregarAlumno(alumno);
-            // Guardar los datos del alumno en el archivo del grupo
+            // Guardar los datos del alumno en el archivo del grupo (modo append)
             try {
                 FileWriter writer = new FileWriter(nombreGrupo + ".txt", true);
                 writer.write(alumno.getNumeroLista() + "," + alumno.getNombre() + "," + alumno.getApellido()
@@ -207,56 +236,9 @@ class SistemaGestionGrupos {
                         break;
                     default:
                         calificacionParcial = 0;
+                        break;
                 }
-                System.out.println("- Alumno: " + alumno.getNombre() + " " + alumno.getApellido());
-                System.out.println("  Número de lista: " + alumno.getNumeroLista());
-                System.out.println("  Calificación: " + calificacionParcial);
-            }
-        } else {
-            System.out.println("El grupo no existe.");
-        }
-    }
-
-    public void consultarCalificacionesFinales(String nombreGrupo) {
-        Grupo grupo = buscarGrupo(nombreGrupo);
-        if (grupo != null) {
-            System.out.println("Calificaciones finales del grupo " + grupo.getNombre() + ":");
-            for (Alumno alumno : grupo.getAlumnos()) {
-                System.out.println("- Alumno: " + alumno.getNombre() + " " + alumno.getApellido());
-                System.out.println("  Número de lista: " + alumno.getNumeroLista());
-                System.out.println("  Calificación final: " + alumno.getPromedioFinal());
-            }
-        } else {
-            System.out.println("El grupo no existe.");
-        }
-    }
-
-    public void consultarAlumnosReprobados(String nombreGrupo) {
-        Grupo grupo = buscarGrupo(nombreGrupo);
-        if (grupo != null) {
-            System.out.println("Alumnos reprobados del grupo " + grupo.getNombre() + ":");
-            for (Alumno alumno : grupo.getAlumnos()) {
-                if (alumno.getPromedioFinal() < 6) {
-                    System.out.println("- Alumno: " + alumno.getNombre() + " " + alumno.getApellido());
-                    System.out.println("  Número de lista: " + alumno.getNumeroLista());
-                    System.out.println("  Calificación final: " + alumno.getPromedioFinal());
-                }
-            }
-        } else {
-            System.out.println("El grupo no existe.");
-        }
-    }
-
-    public void consultarAlumnosAprobados(String nombreGrupo) {
-        Grupo grupo = buscarGrupo(nombreGrupo);
-        if (grupo != null) {
-            System.out.println("Alumnos aprobados del grupo " + grupo.getNombre() + ":");
-            for (Alumno alumno : grupo.getAlumnos()) {
-                if (alumno.getPromedioFinal() >= 6) {
-                    System.out.println("- Alumno: " + alumno.getNombre() + " " + alumno.getApellido());
-                    System.out.println("  Número de lista: " + alumno.getNumeroLista());
-                    System.out.println("  Calificación final: " + alumno.getPromedioFinal());
-                }
+                System.out.println("- " + alumno.getNombre() + " " + alumno.getApellido() + ": " + calificacionParcial);
             }
         } else {
             System.out.println("El grupo no existe.");
@@ -264,11 +246,41 @@ class SistemaGestionGrupos {
     }
 
     private Grupo buscarGrupo(String nombre) {
-        for (Grupo grupo : grupos) {
-            if (grupo.getNombre().equals(nombre)) {
+        String nombreArchivo = nombre + ".txt";
+        File file = new File(nombreArchivo);
+
+        if (file.exists()) {
+            Grupo grupo = new Grupo(nombre);
+            // Leer los datos del archivo y agregar los alumnos al grupo
+            try {
+                Scanner scanner = new Scanner(file);
+                while (scanner.hasNextLine()) {
+                    String linea = scanner.nextLine();
+                    String[] datosAlumno = linea.split(",");
+                    int numeroLista = Integer.parseInt(datosAlumno[0]);
+                    String nombreAlumno = datosAlumno[1];
+                    String apellidoAlumno = datosAlumno[2];
+                    double parcial1 = Double.parseDouble(datosAlumno[3]);
+                    double parcial2 = Double.parseDouble(datosAlumno[4]);
+                    double parcial3 = Double.parseDouble(datosAlumno[5]);
+                    double promedioFinal = Double.parseDouble(datosAlumno[6]);
+
+                    Alumno alumno = new Alumno(nombreAlumno, apellidoAlumno, numeroLista);
+                    alumno.setParcial1(parcial1);
+                    alumno.setParcial2(parcial2);
+                    alumno.setParcial3(parcial3);
+                    alumno.setPromedioFinal(promedioFinal);
+
+                    grupo.agregarAlumno(alumno);
+                }
+                scanner.close();
+
                 return grupo;
+            } catch (FileNotFoundException e) {
+                System.out.println("Error al leer el archivo del grupo.");
             }
         }
+
         return null;
     }
 
@@ -279,5 +291,48 @@ class SistemaGestionGrupos {
             }
         }
         return null;
+    }
+
+    public void consultarCalificacionesFinales(String nombreGrupo) {
+        Grupo grupo = buscarGrupo(nombreGrupo);
+        if (grupo != null) {
+            System.out.println("Calificaciones finales del grupo " + nombreGrupo + ":");
+            for (Alumno alumno : grupo.getAlumnos()) {
+                System.out.println("- " + alumno.getNombre() + " " + alumno.getApellido() + ": " + alumno.getPromedioFinal());
+            }
+        } else {
+            System.out.println("El grupo no existe.");
+        }
+    }
+
+    public void consultarAlumnosReprobados(String nombreGrupo) {
+        Grupo grupo = buscarGrupo(nombreGrupo);
+        if (grupo != null) {
+            System.out.println("Alumnos reprobados del grupo " + nombreGrupo + ":");
+            for (Alumno alumno : grupo.getAlumnos()) {
+                if (alumno.getPromedioFinal() < 6) {
+                    System.out.println("- " + alumno.getNombre() + " " + alumno.getApellido() + " Calificación Final: " + alumno.getPromedioFinal());
+                }
+            }
+        } else {
+            System.out.println("El grupo no existe.");
+        }
+    }
+
+    public void consultarAlumnosAprobados(String nombreGrupo) {
+        Grupo grupo = buscarGrupo(nombreGrupo);
+        if (grupo != null) {
+            System.out.println("Alumnos aprobados del grupo " + nombreGrupo + ":");
+            for (Alumno alumno : grupo.getAlumnos()) {
+                if (alumno.getPromedioFinal() >= 6) {
+                    System.out.println("- " + alumno.getNombre() + " " + alumno.getApellido() + " Calificación Final: " + alumno.getPromedioFinal());
+                }
+            }
+        } else {
+            System.out.println("El grupo no existe.");
+        }
+    }
+
+    public void generarPDFCalificaciones(Grupo grupo) throws IOException {
     }
 }
