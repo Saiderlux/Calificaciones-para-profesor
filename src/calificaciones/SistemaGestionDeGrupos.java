@@ -147,6 +147,12 @@ class SistemaGestionGrupos {
     public void altaAlumno(String nombreGrupo, String nombre, String apellido, int numeroLista) {
         Grupo grupo = buscarGrupo(nombreGrupo);
         if (grupo != null) {
+            // Verificar si el número de lista ya existe en el archivo
+            if (existeNumeroLista(nombreGrupo, numeroLista)) {
+                System.out.println("El número de lista ya existe en el grupo.");
+                return;
+            }
+
             Alumno alumno = new Alumno(nombre, apellido, numeroLista);
             grupo.agregarAlumno(alumno);
             // Guardar los datos del alumno en el archivo del grupo (modo append)
@@ -162,6 +168,26 @@ class SistemaGestionGrupos {
         } else {
             System.out.println("El grupo no existe.");
         }
+    }
+
+// Método para verificar si el número de lista ya existe en el archivo
+    private boolean existeNumeroLista(String nombreGrupo, int numeroLista) {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(nombreGrupo + ".txt"));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] datos = line.split(",");
+                int numeroListaAlumno = Integer.parseInt(datos[0]);
+                if (numeroListaAlumno == numeroLista) {
+                    reader.close();
+                    return true;
+                }
+            }
+            reader.close();
+        } catch (IOException e) {
+            System.out.println("Error al leer el archivo del grupo.");
+        }
+        return false;
     }
 
     public void bajaAlumno(String nombreGrupo, int numeroLista) {
@@ -251,7 +277,9 @@ class SistemaGestionGrupos {
         String nombreArchivo = nombre + ".txt";
         File file = new File(nombreArchivo);
 
-        if (file.exists()) {
+        if (!file.exists()) {
+            System.out.println("El grupo no existe");
+        } else {
             Grupo grupo = new Grupo(nombre);
             // Leer los datos del archivo y agregar los alumnos al grupo
             try {
