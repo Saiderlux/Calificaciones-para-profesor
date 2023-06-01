@@ -12,7 +12,7 @@ import java.util.List;
  * @author Ssaid
  */
 public class Grupo {
-   
+
     private String nombre;
     private List<Alumno> alumnos;
 
@@ -21,12 +21,15 @@ public class Grupo {
         this.alumnos = new ArrayList<>();
     }
 
+    public void eliminarAlumno(Alumno alumno) {
+        alumnos.remove(alumno);
+    }
+
     public void agregarAlumno(Alumno alumno) {
         alumnos.add(alumno);
     }
 
     // Métodos para consultar alumnos y calificaciones del grupo
-
     public String getNombre() {
         return nombre;
     }
@@ -42,6 +45,5 @@ public class Grupo {
     public void setAlumnos(List<Alumno> alumnos) {
         this.alumnos = alumnos;
     }
-    
-}
 
+}
