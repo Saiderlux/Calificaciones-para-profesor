@@ -5,31 +5,12 @@
 package calificaciones;
 
 import java.util.ArrayList;
-import java.util.List;
 
-/**
- *
- * @author Ssaid
- */
 public class Grupo {
 
     private String nombre;
-    private List<Alumno> alumnos;
+    private ArrayList<Alumno> alumnos;
 
-    public Grupo(String nombre) {
-        this.nombre = nombre;
-        this.alumnos = new ArrayList<>();
-    }
-
-    public void eliminarAlumno(Alumno alumno) {
-        alumnos.remove(alumno);
-    }
-
-    public void agregarAlumno(Alumno alumno) {
-        alumnos.add(alumno);
-    }
-
-    // Métodos para consultar alumnos y calificaciones del grupo
     public String getNombre() {
         return nombre;
     }
@@ -38,11 +19,11 @@ public class Grupo {
         this.nombre = nombre;
     }
 
-    public List<Alumno> getAlumnos() {
+    public ArrayList<Alumno> getAlumnos() {
         return alumnos;
     }
 
-    public void setAlumnos(List<Alumno> alumnos) {
+    public void setAlumnos(ArrayList<Alumno> alumnos) {
         this.alumnos = alumnos;
     }
 

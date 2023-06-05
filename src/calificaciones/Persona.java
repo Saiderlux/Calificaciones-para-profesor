@@ -3,31 +3,20 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package calificaciones;
-// Clase Persona
 
-class Persona {
+/**
+ *
+ * @author Ssaid
+ */
+public class Persona {
 
-    protected String nombre;
-    protected String apellido;
-
-    public Persona(String nombre, String apellido) {
-        this.nombre = nombre;
-        this.apellido = apellido;
-    }
+    private String nombre;
 
     public String getNombre() {
         return nombre;
     }
 
-    public String getApellido() {
-        return apellido;
-    }
-
     public void setNombre(String nombre) {
         this.nombre = nombre;
-    }
-
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
     }
 }
