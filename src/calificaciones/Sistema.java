@@ -5,8 +5,10 @@
 package calificaciones;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Scanner;
 
 /**
  *
@@ -14,18 +16,47 @@ import java.io.IOException;
  */
 public class Sistema {
 
+    private static final String ARCHIVO_PROFESOR = "profesor.txt";//Variable constante, con el nombre del archivo profesor.
+
+    private static Profesor ingresarDatosProfesor() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Ingrese el nombre del profesor:");
+        String nombre = scanner.nextLine();
+
+        System.out.println("Ingrese la materia que imparte el profesor:");
+        String materia = scanner.nextLine();
+
+        return new Profesor(nombre, materia);
+    }
+
+    public void validarArchivoProfesor() {// método para verificar si en el sistema ya está dado de alta un profesor
+        File archivo = new File(ARCHIVO_PROFESOR);
+
+        if (!archivo.exists() || archivo.length() == 0) {
+            System.out.println("El archivo profesor.txt no existe o está vacío.");
+            System.out.println("Ingrese los datos del profesor para guardarlo en el archivo:");
+
+            Profesor profesor = ingresarDatosProfesor();
+
+            guardarProfesor(profesor);
+        } else {
+            System.out.println("El archivo profesor.txt existe y contiene datos. Continuando con el programa...");
+        }
+    }
+
     public void guardarGrupo(Grupo grupo) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(grupo.getNombre() + ".txt"))) {
-            for (Alumno alumno : grupo.getAlumnos()) {
-                String datosAlumno = alumno.getNumeroLista() + ","
-                        + alumno.getCalificacion1() + ","
-                        + alumno.getCalificacion2() + ","
-                        + alumno.getCalificacion3() + ","
-                        + alumno.getCalificacionFinal();
-                writer.write(datosAlumno);
-                writer.newLine();
+        String nombreArchivo = grupo.getNombre() + ".txt";
+
+        try {
+            File archivo = new File(nombreArchivo);
+            if (archivo.createNewFile()) {
+                System.out.println("Archivo " + nombreArchivo + " creado correctamente.");
+            } else {
+                System.out.println("El archivo " + nombreArchivo + " ya existe.");
             }
         } catch (IOException e) {
+            System.out.println("Error al crear el archivo " + nombreArchivo);
             e.printStackTrace();
         }
     }
@@ -36,7 +67,6 @@ public class Sistema {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("profesor.txt"))) {
             writer.write(datosProfesor);
         } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }

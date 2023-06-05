@@ -10,6 +10,10 @@ package calificaciones;
  */
 public class Persona {
 
+    public Persona(String nombre) {
+        this.nombre = nombre;
+    }
+
     private String nombre;
 
     public String getNombre() {

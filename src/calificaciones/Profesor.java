@@ -8,6 +8,11 @@ class Profesor extends Persona {
 
     private String materia;
 
+    public Profesor(String materia, String nombre) {
+        super(nombre);
+        this.materia = materia;
+    }
+
     public String getMateria() {
         return materia;
     }
