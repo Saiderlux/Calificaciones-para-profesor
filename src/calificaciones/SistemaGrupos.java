@@ -4,14 +4,54 @@
  */
 package calificaciones;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  *
  * @author Ssaid
  */
 public class SistemaGrupos {
+
+    public void guardarGrupoEnArchivo(Grupo grupo) {
+        String nombreGrupo = grupo.getNombre();
+
+        if (existeGrupoEnArchivo(nombreGrupo)) {
+            System.out.println("El nombre del grupo ya está registrado.");
+            return;
+        }
+
+        try (FileWriter fileWriter = new FileWriter("grupos.txt", true); BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+            bufferedWriter.write(nombreGrupo);
+            bufferedWriter.newLine();
+            System.out.println("El grupo se ha guardado en el archivo correctamente.");
+        } catch (IOException e) {
+            System.out.println("Error al guardar el grupo en el archivo.");
+            e.printStackTrace();
+        }
+    }
+
+    private boolean existeGrupoEnArchivo(String nombreGrupo) {
+        try (FileReader fileReader = new FileReader("grupos.txt"); BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+            String linea;
+
+            while ((linea = bufferedReader.readLine()) != null) {
+                if (linea.equals(nombreGrupo)) {
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error al leer el archivo de grupos.");
+            e.printStackTrace();
+        }
+
+        return false;
+    }
 
     public void guardarGrupo(Grupo grupo) {
         // Obtener el nombre del grupo a guardar
@@ -60,21 +100,63 @@ public class SistemaGrupos {
         }
     }
 
-    public void darDeBajaGrupo(String nombreGrupo) {
-        // Obtener el archivo del grupo
-        File archivoGrupo = new File(nombreGrupo + ".txt");
+    public ArrayList<Grupo> obtenerGrupos() {
+        ArrayList<Grupo> grupos = new ArrayList<>();
 
-        // Verificar si el archivo existe
-        if (!archivoGrupo.exists()) {
-            System.out.println("Error: No existe un grupo con ese nombre.");
+        try (BufferedReader reader = new BufferedReader(new FileReader("grupos.txt"))) {
+            String linea;
+
+            while ((linea = reader.readLine()) != null) {
+                Grupo grupo = new Grupo();
+                grupo.setNombre(linea);
+                grupos.add(grupo);
+            }
+        } catch (IOException e) {
+            System.out.println("Error al leer el archivo de grupos.");
+            e.printStackTrace();
+        }
+
+        return grupos;
+    }
+
+    public void darDeBajaGrupo(Grupo grupo) {
+        // Obtener la lista de grupos
+        ArrayList<Grupo> grupos = obtenerGrupos();
+
+        // Verificar si el grupo existe en la lista
+        if (!grupos.contains(grupo)) {
+            System.out.println("El grupo no está registrado.");
+            return;
+        }
+
+        // Eliminar el grupo de la lista
+        grupos.remove(grupo);
+
+        // Guardar la lista actualizada de grupos en el archivo grupos.txt
+        try (FileWriter fileWriter = new FileWriter("grupos.txt"); BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+            for (Grupo g : grupos) {
+                bufferedWriter.write(g.getNombre());
+                bufferedWriter.newLine();
+            }
+            System.out.println("El grupo se ha dado de baja correctamente.");
+        } catch (IOException e) {
+            System.out.println("Error al dar de baja el grupo.");
+            e.printStackTrace();
             return;
         }
 
         // Eliminar el archivo del grupo
-        if (archivoGrupo.delete()) {
-            System.out.println("Se ha dado de baja al grupo exitosamente.");
+        File archivoGrupo = new File(grupo.getNombre() + ".txt");
+
+        if (archivoGrupo.exists()) {
+            if (archivoGrupo.delete()) {
+                System.out.println("Archivo del grupo eliminado correctamente.");
+            } else {
+                System.out.println("Error al eliminar el archivo del grupo.");
+            }
         } else {
-            System.out.println("Error al dar de baja al grupo.");
+            System.out.println("El archivo del grupo no existe.");
         }
     }
+
 }
