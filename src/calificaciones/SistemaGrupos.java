@@ -59,4 +59,22 @@ public class SistemaGrupos {
             System.out.println("Error al cambiar el nombre del grupo.");
         }
     }
+
+    public void darDeBajaGrupo(String nombreGrupo) {
+        // Obtener el archivo del grupo
+        File archivoGrupo = new File(nombreGrupo + ".txt");
+
+        // Verificar si el archivo existe
+        if (!archivoGrupo.exists()) {
+            System.out.println("Error: No existe un grupo con ese nombre.");
+            return;
+        }
+
+        // Eliminar el archivo del grupo
+        if (archivoGrupo.delete()) {
+            System.out.println("Se ha dado de baja al grupo exitosamente.");
+        } else {
+            System.out.println("Error al dar de baja al grupo.");
+        }
+    }
 }
