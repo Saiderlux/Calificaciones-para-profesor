@@ -18,10 +18,8 @@ public class MainPruebas {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        // Crear instancia de Sistema
-        SistemaGrupos sistema = new SistemaGrupos();
-
-       sistema.consultarGrupos();
+        SistemaAlumnos sistema = new SistemaAlumnos();
+        sistema.darDeAltaAlumnos();
     }
 
     private static Profesor ingresarDatosProfesor() {
