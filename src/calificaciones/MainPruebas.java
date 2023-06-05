@@ -17,14 +17,16 @@ import java.util.Scanner;
 public class MainPruebas {
 
     public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
         // Crear instancia de Sistema
         SistemaGrupos sistema = new SistemaGrupos();
 
         // Pedir al usuario que ingrese los datos del grupo
         Grupo grupo = ingresarDatosGrupo();
 
-        sistema.darDeBajaGrupo(grupo);
-
+        System.out.println("Ingrese el nuevo nombre del grupo");
+        String nuevoNombre = scanner.next();
+        sistema.editarNombreGrupo(grupo.getNombre(), nuevoNombre);
     }
 
     private static Profesor ingresarDatosProfesor() {

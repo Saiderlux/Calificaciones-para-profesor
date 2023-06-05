@@ -18,24 +18,6 @@ import java.util.ArrayList;
  */
 public class SistemaGrupos {
 
-    public void guardarGrupoEnArchivo(Grupo grupo) {
-        String nombreGrupo = grupo.getNombre();
-
-        if (existeGrupoEnArchivo(nombreGrupo)) {
-            System.out.println("El nombre del grupo ya está registrado.");
-            return;
-        }
-
-        try (FileWriter fileWriter = new FileWriter("grupos.txt", true); BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
-            bufferedWriter.write(nombreGrupo);
-            bufferedWriter.newLine();
-            System.out.println("El grupo se ha guardado en el archivo correctamente.");
-        } catch (IOException e) {
-            System.out.println("Error al guardar el grupo en el archivo.");
-            e.printStackTrace();
-        }
-    }
-
     private boolean existeGrupoEnArchivo(String nombreGrupo) {
         try (FileReader fileReader = new FileReader("grupos.txt"); BufferedReader bufferedReader = new BufferedReader(fileReader)) {
             String linea;
@@ -54,49 +36,29 @@ public class SistemaGrupos {
     }
 
     public void guardarGrupo(Grupo grupo) {
-        // Obtener el nombre del grupo a guardar
         String nombreGrupo = grupo.getNombre();
 
-        // Verificar si ya existe un archivo con el mismo nombre
+        if (existeGrupoEnArchivo(nombreGrupo)) {
+            System.out.println("El nombre del grupo ya está registrado.");
+            return;
+        }
+
         File archivoGrupo = new File(nombreGrupo + ".txt");
         if (archivoGrupo.exists()) {
             System.out.println("Error: Ya existe un grupo con el mismo nombre.");
             return;
         }
 
-        // Crear el archivo para el grupo
-        try {
+        try (FileWriter fileWriter = new FileWriter("grupos.txt", true); BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+            bufferedWriter.write(nombreGrupo);
+            bufferedWriter.newLine();
+            System.out.println("El grupo se ha guardado en el archivo correctamente.");
+
             archivoGrupo.createNewFile();
             System.out.println("Se ha creado el archivo para el grupo.");
         } catch (IOException e) {
-            System.out.println("Error al crear el archivo del grupo.");
+            System.out.println("Error al guardar el grupo en el archivo.");
             e.printStackTrace();
-            return;
-        }
-    }
-
-    public void editarNombreGrupo(String nombreAnterior, String nuevoNombre) {
-        // Verificar si ya existe un archivo con el nuevo nombre
-        File archivoNuevo = new File(nuevoNombre + ".txt");
-        if (archivoNuevo.exists()) {
-            System.out.println("Error: Ya existe un grupo con el nuevo nombre.");
-            return;
-        }
-
-        // Obtener el archivo del grupo con el nombre anterior
-        File archivoAnterior = new File(nombreAnterior + ".txt");
-
-        // Verificar si el archivo existe
-        if (!archivoAnterior.exists()) {
-            System.out.println("Error: No existe un grupo con el nombre anterior.");
-            return;
-        }
-
-        // Renombrar el archivo
-        if (archivoAnterior.renameTo(archivoNuevo)) {
-            System.out.println("Se ha cambiado el nombre del grupo exitosamente.");
-        } else {
-            System.out.println("Error al cambiar el nombre del grupo.");
         }
     }
 
@@ -156,6 +118,58 @@ public class SistemaGrupos {
             }
         } else {
             System.out.println("El archivo del grupo no existe.");
+        }
+    }
+
+    public void editarNombreGrupo(String nombreAnterior, String nuevoNombre) {
+        // Validar si el nuevo nombre ya existe como archivo de grupo
+        File archivoGrupoNuevo = new File(nuevoNombre + ".txt");
+        if (archivoGrupoNuevo.exists()) {
+            System.out.println("Error: Ya existe un grupo con el mismo nombre de archivo.");
+            return;
+        }
+
+        // Validar si el nuevo nombre ya existe como registro en grupos.txt
+        File archivoGrupos = new File("grupos.txt");
+        if (existeGrupoEnArchivo(nuevoNombre)) {
+            System.out.println("Error: Ya existe un grupo con el mismo nombre en el archivo grupos.txt.");
+            return;
+        }
+
+        // Modificar el nombre del archivo del grupo
+        File archivoGrupoAnterior = new File(nombreAnterior + ".txt");
+        if (archivoGrupoAnterior.renameTo(archivoGrupoNuevo)) {
+            System.out.println("El nombre del archivo del grupo se ha modificado correctamente.");
+        } else {
+            System.out.println("Error al modificar el nombre del archivo del grupo.");
+        }
+
+        // Modificar el nombre del grupo en el archivo grupos.txt
+        try {
+            FileReader fileReader = new FileReader(archivoGrupos);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            StringBuilder contenido = new StringBuilder();
+
+            String linea;
+            while ((linea = bufferedReader.readLine()) != null) {
+                if (linea.equals(nombreAnterior)) {
+                    contenido.append(nuevoNombre).append("\n");
+                } else {
+                    contenido.append(linea).append("\n");
+                }
+            }
+
+            bufferedReader.close();
+
+            FileWriter fileWriter = new FileWriter(archivoGrupos);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.write(contenido.toString());
+            bufferedWriter.close();
+
+            System.out.println("El nombre del grupo en el archivo grupos.txt se ha modificado correctamente.");
+        } catch (IOException e) {
+            System.out.println("Error al modificar el nombre del grupo en el archivo grupos.txt.");
+            e.printStackTrace();
         }
     }
 
