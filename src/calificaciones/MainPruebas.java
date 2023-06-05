@@ -27,6 +27,7 @@ public class MainPruebas {
 
         // Guardar el profesor
         sistema.guardarProfesor(profesor);
+        sistema.editarProfesor();
 
         // Pedir al usuario que ingrese los datos del grupo
         Grupo grupo = ingresarDatosGrupo();
