@@ -21,12 +21,7 @@ public class MainPruebas {
         // Crear instancia de Sistema
         SistemaGrupos sistema = new SistemaGrupos();
 
-        // Pedir al usuario que ingrese los datos del grupo
-        Grupo grupo = ingresarDatosGrupo();
-
-        System.out.println("Ingrese el nuevo nombre del grupo");
-        String nuevoNombre = scanner.next();
-        sistema.editarNombreGrupo(grupo.getNombre(), nuevoNombre);
+       sistema.consultarGrupos();
     }
 
     private static Profesor ingresarDatosProfesor() {

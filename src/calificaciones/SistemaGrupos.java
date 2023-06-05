@@ -173,4 +173,25 @@ public class SistemaGrupos {
         }
     }
 
+    public void consultarGrupos() {
+        File archivoGrupos = new File("grupos.txt");
+
+        if (!archivoGrupos.exists()) {
+            System.out.println("No se encontró el archivo grupos.txt.");
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(archivoGrupos))) {
+            System.out.println("Grupos registrados:");
+
+            String linea;
+            while ((linea = reader.readLine()) != null) {
+                System.out.println(" - " + linea);
+            }
+        } catch (IOException e) {
+            System.out.println("Error al leer el archivo grupos.txt.");
+            e.printStackTrace();
+        }
+    }
+
 }
