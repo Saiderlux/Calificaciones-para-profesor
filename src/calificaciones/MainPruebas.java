@@ -17,23 +17,19 @@ import java.util.Scanner;
 public class MainPruebas {
 
     public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
 
         // Crear instancia de Sistema
         SistemaGrupos sistema1 = new SistemaGrupos();
         SistemaProfesores sistema = new SistemaProfesores();
-        sistema.validarArchivoProfesor();
+
         // Pedir al usuario que ingrese los datos del profesor
-        Profesor profesor = ingresarDatosProfesor();
-
         // Guardar el profesor
-        sistema.guardarProfesor(profesor);
-        sistema.editarProfesor();
-
-        // Pedir al usuario que ingrese los datos del grupo
-        Grupo grupo = ingresarDatosGrupo();
-
-        // Guardar el grupo
-        sistema1.guardarGrupo(grupo);
+        System.out.println("Ingresa el nombre del grupo que deseas modificar ");
+        String nombreAnterior = scanner.next();
+        System.out.println("Ingresa el nuevo nombre del grupo");
+        String nuevoNombre = scanner.next();
+        sistema1.editarNombreGrupo(nombreAnterior, nuevoNombre);
 
         System.out.println("Datos guardados exitosamente.");
     }

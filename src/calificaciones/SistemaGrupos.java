@@ -14,19 +14,49 @@ import java.io.IOException;
 public class SistemaGrupos {
 
     public void guardarGrupo(Grupo grupo) {
-        String nombreArchivo = grupo.getNombre() + ".txt";
+        // Obtener el nombre del grupo a guardar
+        String nombreGrupo = grupo.getNombre();
 
+        // Verificar si ya existe un archivo con el mismo nombre
+        File archivoGrupo = new File(nombreGrupo + ".txt");
+        if (archivoGrupo.exists()) {
+            System.out.println("Error: Ya existe un grupo con el mismo nombre.");
+            return;
+        }
+
+        // Crear el archivo para el grupo
         try {
-            File archivo = new File(nombreArchivo);
-            if (archivo.createNewFile()) {
-                System.out.println("Archivo " + nombreArchivo + " creado correctamente.");
-            } else {
-                System.out.println("El archivo " + nombreArchivo + " ya existe.");
-            }
+            archivoGrupo.createNewFile();
+            System.out.println("Se ha creado el archivo para el grupo.");
         } catch (IOException e) {
-            System.out.println("Error al crear el archivo " + nombreArchivo);
+            System.out.println("Error al crear el archivo del grupo.");
             e.printStackTrace();
+            return;
         }
     }
-    
+
+    public void editarNombreGrupo(String nombreAnterior, String nuevoNombre) {
+        // Verificar si ya existe un archivo con el nuevo nombre
+        File archivoNuevo = new File(nuevoNombre + ".txt");
+        if (archivoNuevo.exists()) {
+            System.out.println("Error: Ya existe un grupo con el nuevo nombre.");
+            return;
+        }
+
+        // Obtener el archivo del grupo con el nombre anterior
+        File archivoAnterior = new File(nombreAnterior + ".txt");
+
+        // Verificar si el archivo existe
+        if (!archivoAnterior.exists()) {
+            System.out.println("Error: No existe un grupo con el nombre anterior.");
+            return;
+        }
+
+        // Renombrar el archivo
+        if (archivoAnterior.renameTo(archivoNuevo)) {
+            System.out.println("Se ha cambiado el nombre del grupo exitosamente.");
+        } else {
+            System.out.println("Error al cambiar el nombre del grupo.");
+        }
+    }
 }
