@@ -8,7 +8,7 @@ class Profesor extends Persona {
 
     private String materia;
 
-    public Profesor(String materia, String nombre) {
+    public Profesor(String nombre, String materia) {
         super(nombre);
         this.materia = materia;
     }

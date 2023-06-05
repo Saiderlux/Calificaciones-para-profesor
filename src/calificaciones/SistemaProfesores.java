@@ -14,8 +14,8 @@ import java.util.Scanner;
  *
  * @author Ssaid
  */
-public class Sistema {
-
+public class SistemaProfesores {
+    
     private static final String ARCHIVO_PROFESOR = "profesor.txt";//Variable constante, con el nombre del archivo profesor.
 
     private static Profesor ingresarDatosProfesor() {
@@ -45,21 +45,6 @@ public class Sistema {
         }
     }
 
-    public void guardarGrupo(Grupo grupo) {
-        String nombreArchivo = grupo.getNombre() + ".txt";
-
-        try {
-            File archivo = new File(nombreArchivo);
-            if (archivo.createNewFile()) {
-                System.out.println("Archivo " + nombreArchivo + " creado correctamente.");
-            } else {
-                System.out.println("El archivo " + nombreArchivo + " ya existe.");
-            }
-        } catch (IOException e) {
-            System.out.println("Error al crear el archivo " + nombreArchivo);
-            e.printStackTrace();
-        }
-    }
 
     public void guardarProfesor(Profesor profesor) {
         String datosProfesor = profesor.getNombre() + "," + profesor.getMateria();

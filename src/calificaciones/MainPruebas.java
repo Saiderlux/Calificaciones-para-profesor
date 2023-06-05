@@ -17,9 +17,11 @@ import java.util.Scanner;
 public class MainPruebas {
 
     public static void main(String[] args) {
-        // Crear instancia de Sistema
-        Sistema sistema = new Sistema();
 
+        // Crear instancia de Sistema
+        SistemaGrupos sistema1 = new SistemaGrupos();
+        SistemaProfesores sistema = new SistemaProfesores();
+        sistema.validarArchivoProfesor();
         // Pedir al usuario que ingrese los datos del profesor
         Profesor profesor = ingresarDatosProfesor();
 
@@ -30,7 +32,7 @@ public class MainPruebas {
         Grupo grupo = ingresarDatosGrupo();
 
         // Guardar el grupo
-        sistema.guardarGrupo(grupo);
+        sistema1.guardarGrupo(grupo);
 
         System.out.println("Datos guardados exitosamente.");
     }
