@@ -593,4 +593,40 @@ public class SistemaAlumnos {
         return registros;
     }
 
+    public void buscarPorRangoCalificaciones(String grupo) {
+        ArrayList<String> registros = leerArchivoGrupo(grupo);
+
+        if (registros.isEmpty()) {
+            System.out.println("No hay alumnos registrados en el grupo " + grupo);
+            return;
+        }
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Ingrese el límite inferior del rango de calificaciones: ");
+        double limiteInferior = scanner.nextDouble();
+        System.out.print("Ingrese el límite superior del rango de calificaciones: ");
+        double limiteSuperior = scanner.nextDouble();
+
+        System.out.println("Alumnos con calificaciones en el rango [" + limiteInferior + ", " + limiteSuperior + "]:");
+        for (String registro : registros) {
+            String[] datos = registro.split(",");
+            int id = Integer.parseInt(datos[0]);
+            String nombre = datos[1];
+            double calificacion1 = Double.parseDouble(datos[2]);
+            double calificacion2 = Double.parseDouble(datos[3]);
+            double calificacion3 = Double.parseDouble(datos[4]);
+            double calificacionFinal = Double.parseDouble(datos[5]);
+
+            if (calificacionFinal >= limiteInferior && calificacionFinal <= limiteSuperior) {
+                System.out.println("ID: " + id);
+                System.out.println("Nombre: " + nombre);
+                System.out.println("Calificación 1: " + calificacion1);
+                System.out.println("Calificación 2: " + calificacion2);
+                System.out.println("Calificación 3: " + calificacion3);
+                System.out.println("Calificación Final: " + calificacionFinal);
+                System.out.println();
+            }
+        }
+    }
+
 }
