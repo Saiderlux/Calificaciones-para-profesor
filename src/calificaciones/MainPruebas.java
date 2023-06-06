@@ -21,7 +21,7 @@ public class MainPruebas {
         SistemaAlumnos sistema = new SistemaAlumnos();
         System.out.println("Introduce el grupo");
         String grupo = scanner.next();
-        sistema.consultarCalificacionesReprobatorias(grupo);
+        sistema.consultarCalificacionesAprobatorias(grupo);
     }
 
     private static Profesor ingresarDatosProfesor() {

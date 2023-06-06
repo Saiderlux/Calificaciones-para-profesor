@@ -542,6 +542,39 @@ public class SistemaAlumnos {
         }
     }
 
+    public void consultarCalificacionesAprobatorias(String grupo) {
+        ArrayList<String> registros = leerArchivoGrupo(grupo);
+
+        if (registros.isEmpty()) {
+            System.out.println("No hay alumnos registrados en el grupo " + grupo);
+            return;
+        }
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Elija el parcial (1, 2, 3) o calificación final (4) para consultar las calificaciones aprobatorias:");
+        int opcion = scanner.nextInt();
+
+        if (opcion < 1 || opcion > 4) {
+            System.out.println("Opción inválida.");
+            return;
+        }
+
+        System.out.println("Calificaciones aprobatorias - Parcial " + opcion + ":");
+        for (String registro : registros) {
+            String[] datos = registro.split(",");
+            int id = Integer.parseInt(datos[0]);
+            String nombre = datos[1];
+            double calificacion = Double.parseDouble(datos[opcion + 1]);
+
+            if (calificacion > 6 && calificacion <= 10) {
+                System.out.println("ID: " + id);
+                System.out.println("Nombre: " + nombre);
+                System.out.println("Calificación: " + calificacion);
+                System.out.println();
+            }
+        }
+    }
+
     public ArrayList<String> leerArchivoGrupo(String grupo) {
         ArrayList<String> registros = new ArrayList<>();
 
