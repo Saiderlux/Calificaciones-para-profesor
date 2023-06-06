@@ -7,10 +7,12 @@ package calificaciones;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  *
@@ -194,4 +196,39 @@ public class SistemaGrupos {
         }
     }
 
+    public void mostrarGruposDisponibles() {
+        File archivoGrupos = new File("grupos.txt");
+
+        try (Scanner scanner = new Scanner(archivoGrupos)) {
+            System.out.println("Grupos disponibles:");
+
+            while (scanner.hasNextLine()) {
+                String nombreGrupo = scanner.nextLine();
+                File archivoGrupo = new File(nombreGrupo + ".txt");
+
+                if (archivoGrupo.exists() && archivoGrupo.isFile()) {
+                    System.out.println("Grupo: " + nombreGrupo);
+
+                    try (Scanner scannerAlumnos = new Scanner(archivoGrupo)) {
+                        int contadorAlumnos = 0;
+
+                        while (scannerAlumnos.hasNextLine()) {
+                            scannerAlumnos.nextLine();
+                            contadorAlumnos++;
+                        }
+
+                        System.out.println("Cantidad de alumnos: " + contadorAlumnos);
+                    } catch (FileNotFoundException e) {
+                        System.out.println("No se pudo encontrar el archivo del grupo: " + nombreGrupo);
+                    }
+
+                    System.out.println();
+                } else {
+                    System.out.println("No se encontró el archivo del grupo: " + nombreGrupo);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("No se pudo encontrar el archivo de grupos: grupos.txt");
+        }
+    }
 }

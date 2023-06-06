@@ -18,12 +18,11 @@ public class MainPruebas {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        SistemaAlumnos sistema = new SistemaAlumnos();
-        System.out.println("Introduce el grupo");
-        String grupo = scanner.next();
-        
-        sistema.buscarPorRangoCalificaciones(grupo);
+         SistemaGrupos sistema = new SistemaGrupos();
+         sistema.mostrarGruposDisponibles();
     }
+    
+    
 
     private static Profesor ingresarDatosProfesor() {
 
