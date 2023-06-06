@@ -19,7 +19,9 @@ public class MainPruebas {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         SistemaAlumnos sistema = new SistemaAlumnos();
-        sistema.consultarAlumnos();
+        System.out.println("Introduce el grupo");
+        String grupo = scanner.next();
+        sistema.consultarCalificacionesReprobatorias(grupo);
     }
 
     private static Profesor ingresarDatosProfesor() {

@@ -60,6 +60,19 @@ public class Alumno extends Persona {
         this.calificacionFinal = calificacionFinal;
     }
 
+    public double getCalificacionParcial(int numeroParcial) {
+        switch (numeroParcial) {
+            case 1:
+                return calificacion1;
+            case 2:
+                return calificacion2;
+            case 3:
+                return calificacion3;
+            default:
+                throw new IllegalArgumentException("Número de parcial inválido: " + numeroParcial);
+        }
+    }
+
     public void calcularCalificacionFinal() {
         calificacionFinal = (calificacion1 + calificacion2 + calificacion3) / 3.0;
     }
