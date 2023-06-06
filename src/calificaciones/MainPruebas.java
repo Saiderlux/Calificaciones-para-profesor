@@ -18,35 +18,44 @@ public class MainPruebas {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-         SistemaGrupos sistema = new SistemaGrupos();
-         sistema.mostrarGruposDisponibles();
-    }
-    
-    
+        int opcion;
+        SistemaAlumnos alumnos = new SistemaAlumnos();
+        SistemaGrupos grupos = new SistemaGrupos();
+        SistemaProfesores profesores = new SistemaProfesores();
+        do {
+            System.out.println("********** Opciones de Alumnos **********");
+            System.out.println("1. Opciones de profesores");
+            System.out.println("2. Opciones de grupos");
+            System.out.println("3. Opciones de alumnos");
+            System.out.println("4. Opciones de consulta");
+            System.out.println("0. Salir");
+            System.out.println("Ingrese la opción deseada:");
 
-    private static Profesor ingresarDatosProfesor() {
+            opcion = scanner.nextInt();
 
-        Scanner scanner = new Scanner(System.in);
+            switch (opcion) {
 
-        System.out.println("Ingrese el nombre del profesor:");
-        String nombre = scanner.nextLine();
+                case 1:
+                    profesores.opcionesProfesores();
+                    break;
+                case 2:
+                    grupos.opcionesGrupos();
+                    break;
+                case 3:
+                    alumnos.opcionesAlumnos();
+                    break;
+                case 4:
+                    alumnos.opcionesConsulta();
+                    break;
+                case 0:
+                    System.out.println("Saliendo...");
+                    break;
+                default:
+                    System.out.println("Opción inválida. Intente nuevamente.");
+                    break;
+            }
 
-        System.out.println("Ingrese la materia que imparte el profesor:");
-        String materia = scanner.nextLine();
-
-        Profesor profesor = new Profesor(nombre, materia);
-        return profesor;
-    }
-
-    private static Grupo ingresarDatosGrupo() {
-        Grupo grupo = new Grupo();
-
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.println("Ingrese el nombre del grupo:");
-        String nombre = scanner.nextLine();
-        grupo.setNombre(nombre);
-
-        return grupo;
+            System.out.println();
+        } while (opcion != 0);
     }
 }

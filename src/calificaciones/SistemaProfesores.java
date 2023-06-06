@@ -18,6 +18,40 @@ import java.util.Scanner;
  */
 public class SistemaProfesores {
 
+    public void opcionesProfesores() {
+        Scanner scanner = new Scanner(System.in);
+        int opcion;
+
+        do {
+            System.out.println("********** Opciones de Profesores **********");
+            System.out.println("1. Guardar profesor");
+            System.out.println("2. Editar profesor");
+            System.out.println("0. Salir");
+            System.out.println("Ingrese la opción deseada:");
+
+            opcion = scanner.nextInt();
+
+            switch (opcion) {
+               
+                case 1:
+                    Profesor profesor = ingresarDatosProfesor();
+                    guardarProfesor(profesor);
+                    break;
+                case 2:
+                    editarProfesor();
+                    break;
+                case 0:
+                    System.out.println("Saliendo...");
+                    break;
+                default:
+                    System.out.println("Opción inválida. Intente nuevamente.");
+                    break;
+            }
+
+            System.out.println();
+        } while (opcion != 0);
+    }
+    
     private static final String ARCHIVO_PROFESOR = "profesor.txt";//Variable constante, con el nombre del archivo profesor.
 
     private static Profesor ingresarDatosProfesor() {
@@ -112,5 +146,5 @@ public class SistemaProfesores {
             e.printStackTrace();
         }
     }
-    
+
 }

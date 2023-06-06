@@ -20,6 +20,63 @@ import java.util.Scanner;
  */
 public class SistemaGrupos {
 
+    public void opcionesGrupos() {
+        Scanner scanner = new Scanner(System.in);
+        int opcion;
+        SistemaAlumnos alumnos = new SistemaAlumnos();
+        do {
+            System.out.println("********** Opciones de Grupos **********");
+            System.out.println("1. Dar de alta grupo");
+            System.out.println("2. Dar de baja grupo");
+            System.out.println("3. Editar nombre de un grupo");
+            System.out.println("0. Salir");
+            System.out.println("Ingrese la opción deseada:");
+
+            opcion = scanner.nextInt();
+
+            switch (opcion) {
+
+                case 1:
+                    Grupo grupo = ingresarDatosGrupo();
+                    guardarGrupo(grupo);
+                    break;
+                case 2:
+                    alumnos.mostrarGruposDisponibles();
+                    Grupo grupo1 = ingresarDatosGrupo();
+                    darDeBajaGrupo(grupo1);
+                    break;
+                case 3:
+                    alumnos.mostrarGruposDisponibles();
+                    System.out.println("Ingrese el nombre del grupo a editar: ");
+                    String nombreAnterior = scanner.next();
+                    System.out.println("Ingrese el nuevo nombre del grupo: ");
+                    String nuevoNombre = scanner.next();
+                    editarNombreGrupo(nombreAnterior, nuevoNombre);
+                    break;
+                case 0:
+                    System.out.println("Saliendo...");
+                    break;
+                default:
+                    System.out.println("Opción inválida. Intente nuevamente.");
+                    break;
+            }
+
+            System.out.println();
+        } while (opcion != 0);
+    }
+
+    private static Grupo ingresarDatosGrupo() {
+        Grupo grupo = new Grupo();
+
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Ingrese el nombre del grupo:");
+        String nombre = scanner.nextLine();
+        grupo.setNombre(nombre);
+
+        return grupo;
+    }
+
     private boolean existeGrupoEnArchivo(String nombreGrupo) {
         try (FileReader fileReader = new FileReader("grupos.txt"); BufferedReader bufferedReader = new BufferedReader(fileReader)) {
             String linea;
@@ -85,6 +142,7 @@ public class SistemaGrupos {
 
     public void darDeBajaGrupo(Grupo grupo) {
         // Obtener la lista de grupos
+
         ArrayList<Grupo> grupos = obtenerGrupos();
 
         // Verificar si el grupo existe en la lista
@@ -175,60 +233,4 @@ public class SistemaGrupos {
         }
     }
 
-    public void consultarGrupos() {
-        File archivoGrupos = new File("grupos.txt");
-
-        if (!archivoGrupos.exists()) {
-            System.out.println("No se encontró el archivo grupos.txt.");
-            return;
-        }
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(archivoGrupos))) {
-            System.out.println("Grupos registrados:");
-
-            String linea;
-            while ((linea = reader.readLine()) != null) {
-                System.out.println(" - " + linea);
-            }
-        } catch (IOException e) {
-            System.out.println("Error al leer el archivo grupos.txt.");
-            e.printStackTrace();
-        }
-    }
-
-    public void mostrarGruposDisponibles() {
-        File archivoGrupos = new File("grupos.txt");
-
-        try (Scanner scanner = new Scanner(archivoGrupos)) {
-            System.out.println("Grupos disponibles:");
-
-            while (scanner.hasNextLine()) {
-                String nombreGrupo = scanner.nextLine();
-                File archivoGrupo = new File(nombreGrupo + ".txt");
-
-                if (archivoGrupo.exists() && archivoGrupo.isFile()) {
-                    System.out.println("Grupo: " + nombreGrupo);
-
-                    try (Scanner scannerAlumnos = new Scanner(archivoGrupo)) {
-                        int contadorAlumnos = 0;
-
-                        while (scannerAlumnos.hasNextLine()) {
-                            scannerAlumnos.nextLine();
-                            contadorAlumnos++;
-                        }
-
-                        System.out.println("Cantidad de alumnos: " + contadorAlumnos);
-                    } catch (FileNotFoundException e) {
-                        System.out.println("No se pudo encontrar el archivo del grupo: " + nombreGrupo);
-                    }
-
-                    System.out.println();
-                } else {
-                    System.out.println("No se encontró el archivo del grupo: " + nombreGrupo);
-                }
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("No se pudo encontrar el archivo de grupos: grupos.txt");
-        }
-    }
 }

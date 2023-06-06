@@ -7,6 +7,7 @@ package calificaciones;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -25,11 +26,107 @@ public class SistemaAlumnos {
 
     private Map<String, Alumno> alumnos = new HashMap<>();
 
+    public void opcionesAlumnos() {
+        File grupos = new File("grupos.txt");
+        Scanner scanner = new Scanner(System.in);
+        int opcion;
+        if (!grupos.exists() || grupos.length() == 0) {
+            System.out.println("Primero debes dar de alta un grupo");
+        } else {
+            do {
+                System.out.println("********** Opciones de Alumnos **********");
+                System.out.println("1. Dar de alta alumno");
+                System.out.println("2. Dar de baja alumno");
+                System.out.println("3. Editar datos de un alumno");
+                System.out.println("0. Salir");
+                System.out.println("Ingrese la opción deseada:");
+
+                opcion = scanner.nextInt();
+
+                switch (opcion) {
+
+                    case 1:
+                        darDeAltaAlumnos();
+                        break;
+                    case 2:
+                        darDeBajaAlumno();
+                        break;
+                    case 3:
+                        editarAlumno();
+                        break;
+                    case 0:
+                        System.out.println("Saliendo...");
+                        break;
+                    default:
+                        System.out.println("Opción inválida. Intente nuevamente.");
+                        break;
+                }
+
+                System.out.println();
+            } while (opcion != 0);
+        }
+    }
+
+    public void opcionesConsulta() {
+        Scanner scanner = new Scanner(System.in);
+        int opcion;
+        String grupo;
+        do {
+            System.out.println("********** Opciones de Alumnos **********");
+            System.out.println("1. Consulta de grupos\n"
+                    + "2. Consulta por calificaciones reprobatorias\n"
+                    + "3. Consulta por calficaciones aprobatorias\n"
+                    + "4. Consulta de un único alumno\n"
+                    + "5. Consulta por rango de calificaciones\n"
+                    + "6. Lista de alumnos por grupo");
+            System.out.println("0. Salir");
+
+            opcion = scanner.nextInt();
+
+            switch (opcion) {
+
+                case 1:
+                    mostrarGruposDisponibles();
+                    break;
+                case 2:
+                    System.out.println("Ingrese el nombre del grupo: ");
+                    grupo = scanner.next();
+                    consultarCalificacionesReprobatorias(grupo);
+                    break;
+                case 3:
+                    System.out.println("Ingrese el nombre del grupo: ");
+                    grupo = scanner.next();
+                    consultarCalificacionesReprobatorias(grupo);
+                    break;
+                case 4:
+                    consultarAlumno();
+                    break;
+                case 5:
+                    System.out.println("Ingrese el nombre del grupo: ");
+                    grupo = scanner.next();
+                    buscarPorRangoCalificaciones(grupo);
+                    break;
+                case 6:
+                    consultarAlumnos();
+                    break;
+                case 0:
+                    System.out.println("Saliendo...");
+                    break;
+                default:
+                    System.out.println("Opción inválida. Intente nuevamente.");
+                    break;
+            }
+
+            System.out.println();
+        } while (opcion != 0);
+    }
+
     public void darDeAltaAlumnos() {
         Scanner scanner = new Scanner(System.in);
 
+        mostrarGruposDisponibles();
         // Solicitar el nombre del grupo
-        System.out.println("Ingrese el nombre del grupo: ");
+        System.out.println("\nIngrese el nombre del grupo: ");
         String nombreGrupo = scanner.nextLine();
 
         // Verificar si el grupo ya está dado de alta en el archivo
@@ -152,6 +249,7 @@ public class SistemaAlumnos {
     }
 
     public void darDeBajaAlumno() {
+        mostrarGruposDisponibles();
         Scanner scanner = new Scanner(System.in);
 
         // Solicitar el nombre del grupo
@@ -488,24 +586,41 @@ public class SistemaAlumnos {
         scanner.close();
     }
 
-    public static void mostrarGruposDisponibles() {
+    public void mostrarGruposDisponibles() {
         File archivoGrupos = new File("grupos.txt");
 
-        // Verificar si el archivo de grupos existe
-        if (!archivoGrupos.exists()) {
-            System.out.println("No hay grupos disponibles.");
-            return;
-        }
-
-        try (FileReader fileReader = new FileReader(archivoGrupos); BufferedReader bufferedReader = new BufferedReader(fileReader)) {
-            String linea;
+        try (Scanner scanner = new Scanner(archivoGrupos)) {
             System.out.println("Grupos disponibles:");
-            while ((linea = bufferedReader.readLine()) != null) {
-                System.out.println(linea);
+
+            while (scanner.hasNextLine()) {
+                String nombreGrupo = scanner.nextLine();
+                File archivoGrupo = new File(nombreGrupo + ".txt");
+
+                if (archivoGrupo.exists() && archivoGrupo.isFile()) {
+                    System.out.println("Grupo: " + nombreGrupo);
+
+                    try (Scanner scannerAlumnos = new Scanner(archivoGrupo)) {
+                        int contadorAlumnos = 0;
+
+                        while (scannerAlumnos.hasNextLine()) {
+                            String linea = scannerAlumnos.nextLine();
+                            if (!linea.isEmpty()) {
+                                contadorAlumnos++;
+                            }
+                        }
+
+                        System.out.println("Cantidad de alumnos: " + contadorAlumnos);
+                    } catch (FileNotFoundException e) {
+                        System.out.println("No se pudo encontrar el archivo del grupo: " + nombreGrupo);
+                    }
+
+                    System.out.println();
+                } else {
+                    System.out.println("No se encontró el archivo del grupo: " + nombreGrupo);
+                }
             }
-        } catch (IOException e) {
-            System.out.println("Error al leer el archivo de grupos.");
-            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            System.out.println("No se pudo encontrar el archivo de grupos: grupos.txt");
         }
     }
 
