@@ -19,7 +19,7 @@ public class MainPruebas {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         SistemaAlumnos sistema = new SistemaAlumnos();
-        sistema.editarAlumno();
+        sistema.consultarAlumno();
     }
 
     private static Profesor ingresarDatosProfesor() {

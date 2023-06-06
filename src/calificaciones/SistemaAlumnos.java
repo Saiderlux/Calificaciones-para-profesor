@@ -382,4 +382,62 @@ public class SistemaAlumnos {
         scanner.close();
     }
 
+    public void consultarAlumno() {
+        Scanner scanner = new Scanner(System.in);
+
+        // Solicitar el nombre del grupo
+        System.out.println("Ingrese el nombre del grupo: ");
+        String nombreGrupo = scanner.nextLine();
+
+        // Verificar si el grupo ya está dado de alta en el archivo
+        if (!existeGrupoEnArchivo(nombreGrupo)) {
+            System.out.println("El grupo no está dado de alta.");
+            return;
+        }
+
+        // Obtener el archivo del grupo
+        File archivoGrupo = new File(nombreGrupo + ".txt");
+
+        // Solicitar el ID del alumno a consultar
+        System.out.println("Ingrese el ID del alumno a consultar: ");
+        int idAlumno = Integer.parseInt(scanner.nextLine());
+
+        // Verificar si el alumno existe en el archivo del grupo
+        boolean encontrado = false;
+        try (FileReader fileReader = new FileReader(archivoGrupo); BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+            String linea;
+            while ((linea = bufferedReader.readLine()) != null) {
+                String[] datos = linea.split(",");
+                int id = Integer.parseInt(datos[0]);
+                if (id == idAlumno) {
+                    encontrado = true;
+                    String nombre = datos[1];
+                    double calificacion1 = Double.parseDouble(datos[2]);
+                    double calificacion2 = Double.parseDouble(datos[3]);
+                    double calificacion3 = Double.parseDouble(datos[4]);
+                    double calificacionFinal = Double.parseDouble(datos[5]);
+
+                    System.out.println("ID: " + id);
+                    System.out.println("Nombre: " + nombre);
+                    System.out.println("Calificación Parcial 1: " + calificacion1);
+                    System.out.println("Calificación Parcial 2: " + calificacion2);
+                    System.out.println("Calificación Parcial 3: " + calificacion3);
+                    System.out.println("Calificación Final: " + calificacionFinal);
+
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error al leer el archivo del grupo.");
+            e.printStackTrace();
+            return;
+        }
+
+        if (!encontrado) {
+            System.out.println("El alumno con ID " + idAlumno + " no está registrado en el grupo.");
+        }
+
+        scanner.close();
+    }
+
 }
