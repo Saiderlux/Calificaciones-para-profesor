@@ -238,4 +238,148 @@ public class SistemaAlumnos {
 
         scanner.close();
     }
+
+    public void editarAlumno() {
+        Scanner scanner = new Scanner(System.in);
+
+        // Solicitar el nombre del grupo
+        System.out.println("Ingrese el nombre del grupo: ");
+        String nombreGrupo = scanner.nextLine();
+
+        // Verificar si el grupo ya está dado de alta en el archivo
+        if (!existeGrupoEnArchivo(nombreGrupo)) {
+            System.out.println("El grupo no está dado de alta.");
+            return;
+        }
+
+        // Obtener el archivo del grupo
+        File archivoGrupo = new File(nombreGrupo + ".txt");
+
+        // Leer los datos del archivo y guardarlos en una lista
+        List<String> lineas = new ArrayList<>();
+        try (FileReader fileReader = new FileReader(archivoGrupo); BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+            String linea;
+            while ((linea = bufferedReader.readLine()) != null) {
+                lineas.add(linea);
+            }
+        } catch (IOException e) {
+            System.out.println("Error al leer el archivo del grupo.");
+            e.printStackTrace();
+            return;
+        }
+
+        // Mostrar los alumnos disponibles para editar
+        System.out.println("Alumnos disponibles:");
+        for (String linea : lineas) {
+            String[] datos = linea.split(",");
+            int idAlumno = Integer.parseInt(datos[0]);
+            String nombreAlumno = datos[1];
+            double calificacion1 = Double.parseDouble(datos[2]);
+            double calificacion2 = Double.parseDouble(datos[3]);
+            double calificacion3 = Double.parseDouble(datos[4]);
+
+            System.out.println("ID: " + idAlumno + " | Nombre: " + nombreAlumno + " | Parcial 1: " + calificacion1 + " | Parcial 2: " + calificacion2 + " | Parcial 3: " + calificacion3);
+        }
+
+        // Solicitar el ID del alumno a editar
+        System.out.println("Ingrese el ID del alumno a editar: ");
+        int idAlumnoEditar = Integer.parseInt(scanner.nextLine());
+
+        // Buscar el alumno en la lista de datos del archivo
+        int indiceAlumnoEditar = -1;
+        for (int i = 0; i < lineas.size(); i++) {
+            String linea = lineas.get(i);
+            String[] datos = linea.split(",");
+            int idAlumno = Integer.parseInt(datos[0]);
+            if (idAlumno == idAlumnoEditar) {
+                indiceAlumnoEditar = i;
+                break;
+            }
+        }
+
+        // Verificar si se encontró al alumno
+        if (indiceAlumnoEditar == -1) {
+            System.out.println("El alumno con ID " + idAlumnoEditar + " no está registrado en el grupo.");
+            return;
+        }
+
+        // Obtener los datos del alumno a editar
+        String lineaAlumnoEditar = lineas.get(indiceAlumnoEditar);
+        String[] datosAlumnoEditar = lineaAlumnoEditar.split(",");
+
+        // Mostrar el menú de opciones de edición
+        System.out.println("Opciones de edición:");
+        System.out.println("1. Editar nombre");
+        System.out.println("2. Editar calificación del Parcial 1");
+        System.out.println("3. Editar calificación del Parcial 2");
+        System.out.println("4. Editar calificación del Parcial 3");
+        System.out.println("0. Salir");
+
+        boolean continuarEdicion = true;
+        while (continuarEdicion) {
+            System.out.println("Ingrese el número de opción: ");
+            int opcionEdicion = Integer.parseInt(scanner.nextLine());
+
+            switch (opcionEdicion) {
+                case 1:
+                    // Editar nombre del alumno
+                    System.out.println("Ingrese el nuevo nombre del alumno: ");
+                    String nuevoNombre = scanner.nextLine();
+                    datosAlumnoEditar[1] = nuevoNombre;
+                    break;
+                case 2:
+                    // Editar calificación del Parcial 1
+                    System.out.println("Ingrese la nueva calificación del Parcial 1: ");
+                    double nuevaCalificacion1 = Double.parseDouble(scanner.nextLine());
+                    datosAlumnoEditar[2] = String.valueOf(nuevaCalificacion1);
+                    break;
+                case 3:
+                    // Editar calificación del Parcial 2
+                    System.out.println("Ingrese la nueva calificación del Parcial 2: ");
+                    double nuevaCalificacion2 = Double.parseDouble(scanner.nextLine());
+                    datosAlumnoEditar[3] = String.valueOf(nuevaCalificacion2);
+                    break;
+                case 4:
+                    // Editar calificación del Parcial 3
+                    System.out.println("Ingrese la nueva calificación del Parcial 3: ");
+                    double nuevaCalificacion3 = Double.parseDouble(scanner.nextLine());
+                    datosAlumnoEditar[4] = String.valueOf(nuevaCalificacion3);
+                    break;
+                case 0:
+                    // Salir del menú de edición
+                    continuarEdicion = false;
+                    break;
+                default:
+                    System.out.println("Opción inválida. Por favor, ingrese una opción válida.");
+                    break;
+            }
+        }
+
+        // Calcular la nueva calificación final
+        double calificacion1 = Double.parseDouble(datosAlumnoEditar[2]);
+        double calificacion2 = Double.parseDouble(datosAlumnoEditar[3]);
+        double calificacion3 = Double.parseDouble(datosAlumnoEditar[4]);
+        double calificacionFinal = (calificacion1 + calificacion2 + calificacion3) / 3.0;
+        datosAlumnoEditar[5] = String.valueOf(calificacionFinal);
+
+        // Actualizar la línea del alumno en la lista de datos del archivo
+        String nuevaLineaAlumnoEditar = String.join(",", datosAlumnoEditar);
+        lineas.set(indiceAlumnoEditar, nuevaLineaAlumnoEditar);
+
+        // Guardar los cambios en el archivo del grupo
+        try (FileWriter fileWriter = new FileWriter(archivoGrupo); BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+            for (String linea : lineas) {
+                bufferedWriter.write(linea);
+                bufferedWriter.newLine();
+            }
+
+            System.out.println("Los datos del alumno se han actualizado correctamente en el archivo.");
+        } catch (IOException e) {
+            System.out.println("Error al guardar los cambios en el archivo del grupo.");
+            e.printStackTrace();
+        }
+
+        scanner.close();
+    }
+
 }
