@@ -440,4 +440,72 @@ public class SistemaAlumnos {
         scanner.close();
     }
 
+    public void consultarAlumnos() {
+        Scanner scanner = new Scanner(System.in);
+        mostrarGruposDisponibles();
+        // Solicitar el nombre del grupo
+        System.out.println("Ingrese el nombre del grupo: ");
+        String nombreGrupo = scanner.nextLine();
+
+        // Verificar si el grupo ya está dado de alta en el archivo
+        if (!existeGrupoEnArchivo(nombreGrupo)) {
+            System.out.println("El grupo no está dado de alta.");
+            return;
+        }
+
+        // Obtener el archivo del grupo
+        File archivoGrupo = new File(nombreGrupo + ".txt");
+
+        // Verificar si el archivo del grupo existe
+        if (!archivoGrupo.exists()) {
+            System.out.println("El archivo del grupo no existe.");
+            return;
+        }
+
+        // Imprimir encabezados de la tabla
+        System.out.println("ID | \tNombre |\tParcial 1 |\tParcial 2 |\tParcial 3 |\tCalificación Final");
+
+        try (FileReader fileReader = new FileReader(archivoGrupo); BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+            String linea;
+            while ((linea = bufferedReader.readLine()) != null) {
+                String[] datos = linea.split(",");
+                int id = Integer.parseInt(datos[0]);
+                String nombre = datos[1];
+                double calificacion1 = Double.parseDouble(datos[2]);
+                double calificacion2 = Double.parseDouble(datos[3]);
+                double calificacion3 = Double.parseDouble(datos[4]);
+                double calificacionFinal = Double.parseDouble(datos[5]);
+
+                // Imprimir datos del alumno en la tabla
+                System.out.println(id + " \t" + nombre + " \t\t" + calificacion1 + " \t\t" + calificacion2 + " \t\t" + calificacion3 + "\t\t" + calificacionFinal);
+            }
+        } catch (IOException e) {
+            System.out.println("Error al leer el archivo del grupo.");
+            e.printStackTrace();
+            return;
+        }
+
+        scanner.close();
+    }
+
+    public static void mostrarGruposDisponibles() {
+        File archivoGrupos = new File("grupos.txt");
+
+        // Verificar si el archivo de grupos existe
+        if (!archivoGrupos.exists()) {
+            System.out.println("No hay grupos disponibles.");
+            return;
+        }
+
+        try (FileReader fileReader = new FileReader(archivoGrupos); BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+            String linea;
+            System.out.println("Grupos disponibles:");
+            while ((linea = bufferedReader.readLine()) != null) {
+                System.out.println(linea);
+            }
+        } catch (IOException e) {
+            System.out.println("Error al leer el archivo de grupos.");
+            e.printStackTrace();
+        }
+    }
 }
