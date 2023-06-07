@@ -24,45 +24,59 @@ public class SistemaGrupos {
         Scanner scanner = new Scanner(System.in);
         int opcion;
         SistemaAlumnos alumnos = new SistemaAlumnos();
-        do {
-            System.out.println("********** Opciones de Grupos **********");
-            System.out.println("1. Dar de alta grupo");
-            System.out.println("2. Dar de baja grupo");
-            System.out.println("3. Editar nombre de un grupo");
-            System.out.println("0. Salir");
-            System.out.println("Ingrese la opción deseada:");
+        File archivoProfesor = new File("profesor.txt");
+        File archivoGrupos = new File("grupos.txt");
 
-            opcion = scanner.nextInt();
+        if (!archivoProfesor.exists() || archivoProfesor.length() == 0) {
+            System.out.println("Primero debes dar de alta un profesor");
+        } else {
+            do {
+                if (!archivoGrupos.exists()) {
+                    try {
+                        archivoGrupos.createNewFile();
+                        System.out.println("Se ha creado el archivo grupos.txt.");
+                    } catch (IOException e) {
+                        System.out.println("Error al crear el archivo grupos.txt: " + e.getMessage());
+                    }
+                }
+                System.out.println("********** Opciones de Grupos **********");
+                System.out.println("1. Dar de alta grupo");
+                System.out.println("2. Dar de baja grupo");
+                System.out.println("3. Editar nombre de un grupo");
+                System.out.println("0. Salir");
+                System.out.println("Ingrese la opción deseada:");
 
-            switch (opcion) {
+                opcion = scanner.nextInt();
 
-                case 1:
-                    Grupo grupo = ingresarDatosGrupo();
-                    guardarGrupo(grupo);
-                    break;
-                case 2:
-                    alumnos.mostrarGruposDisponibles();
-                    Grupo grupo1 = ingresarDatosGrupo();
-                    darDeBajaGrupo(grupo1);
-                    break;
-                case 3:
-                    alumnos.mostrarGruposDisponibles();
-                    System.out.println("Ingrese el nombre del grupo a editar: ");
-                    String nombreAnterior = scanner.next();
-                    System.out.println("Ingrese el nuevo nombre del grupo: ");
-                    String nuevoNombre = scanner.next();
-                    editarNombreGrupo(nombreAnterior, nuevoNombre);
-                    break;
-                case 0:
-                    System.out.println("Saliendo...");
-                    break;
-                default:
-                    System.out.println("Opción inválida. Intente nuevamente.");
-                    break;
-            }
+                switch (opcion) {
+                    case 1:
+                        Grupo grupo = ingresarDatosGrupo();
+                        guardarGrupo(grupo);
+                        break;
+                    case 2:
+                        alumnos.mostrarGruposDisponibles();
+                        Grupo grupo1 = ingresarDatosGrupo();
+                        darDeBajaGrupo(grupo1);
+                        break;
+                    case 3:
+                        alumnos.mostrarGruposDisponibles();
+                        System.out.println("Ingrese el nombre del grupo a editar: ");
+                        String nombreAnterior = scanner.next();
+                        System.out.println("Ingrese el nuevo nombre del grupo: ");
+                        String nuevoNombre = scanner.next();
+                        editarNombreGrupo(nombreAnterior, nuevoNombre);
+                        break;
+                    case 0:
+                        System.out.println("Saliendo...");
+                        break;
+                    default:
+                        System.out.println("Opción inválida. Intente nuevamente.");
+                        break;
+                }
 
-            System.out.println();
-        } while (opcion != 0);
+                System.out.println();
+            } while (opcion != 0);
+        }
     }
 
     private static Grupo ingresarDatosGrupo() {
@@ -233,4 +247,5 @@ public class SistemaGrupos {
         }
     }
 
+    
 }

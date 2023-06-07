@@ -13,9 +13,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 /**
@@ -68,57 +71,48 @@ public class SistemaAlumnos {
     }
 
     public void opcionesConsulta() {
+        File grupos = new File("grupos.txt");
         Scanner scanner = new Scanner(System.in);
-        int opcion;
+        int opcion = 10;
         String grupo;
-        do {
-            System.out.println("********** Opciones de Alumnos **********");
-            System.out.println("1. Consulta de grupos\n"
-                    + "2. Consulta por calificaciones reprobatorias\n"
-                    + "3. Consulta por calficaciones aprobatorias\n"
-                    + "4. Consulta de un único alumno\n"
-                    + "5. Consulta por rango de calificaciones\n"
-                    + "6. Lista de alumnos por grupo");
-            System.out.println("0. Salir");
+        if (!grupos.exists() || grupos.length() == 0) {
+            System.out.println("Primero debes dar de alta un grupo");
+        } else {
+            do {
+                System.out.println("********** Opciones de Alumnos **********");
+                System.out.println("1. Dar de alta alumno");
+                System.out.println("2. Dar de baja alumno");
+                System.out.println("3. Editar datos de un alumno");
+                System.out.println("0. Salir");
+                System.out.println("Ingrese la opción deseada:");
 
-            opcion = scanner.nextInt();
+                if (scanner.hasNextInt()) {
+                    opcion = scanner.nextInt();
+                    switch (opcion) {
+                        case 1:
+                            darDeAltaAlumnos();
+                            break;
+                        case 2:
+                            darDeBajaAlumno();
+                            break;
+                        case 3:
+                            editarAlumno();
+                            break;
+                        case 0:
+                            System.out.println("Saliendo...");
+                            break;
+                        default:
+                            System.out.println("Opción inválida. Intente nuevamente.");
+                            break;
+                    }
+                } else {
+                    System.out.println("Entrada inválida. Intente nuevamente.");
+                    scanner.next(); // Descartar la entrada inválida
+                }
 
-            switch (opcion) {
-
-                case 1:
-                    mostrarGruposDisponibles();
-                    break;
-                case 2:
-                    System.out.println("Ingrese el nombre del grupo: ");
-                    grupo = scanner.next();
-                    consultarCalificacionesReprobatorias(grupo);
-                    break;
-                case 3:
-                    System.out.println("Ingrese el nombre del grupo: ");
-                    grupo = scanner.next();
-                    consultarCalificacionesReprobatorias(grupo);
-                    break;
-                case 4:
-                    consultarAlumno();
-                    break;
-                case 5:
-                    System.out.println("Ingrese el nombre del grupo: ");
-                    grupo = scanner.next();
-                    buscarPorRangoCalificaciones(grupo);
-                    break;
-                case 6:
-                    consultarAlumnos();
-                    break;
-                case 0:
-                    System.out.println("Saliendo...");
-                    break;
-                default:
-                    System.out.println("Opción inválida. Intente nuevamente.");
-                    break;
-            }
-
-            System.out.println();
-        } while (opcion != 0);
+                System.out.println();
+            } while (opcion != 0);
+        }
     }
 
     public void darDeAltaAlumnos() {
@@ -142,7 +136,7 @@ public class SistemaAlumnos {
         boolean continuar = true;
         while (continuar) {
             System.out.println("Ingrese los datos del alumno:");
-            System.out.println("ID: ");
+            System.out.println("ID (Número de lista): ");
             int idAlumno = Integer.parseInt(scanner.nextLine());
 
             // Verificar si el alumno ya está dado de alta en el archivo
@@ -186,8 +180,8 @@ public class SistemaAlumnos {
                 continuar = false;
             }
         }
+        ordenarRegistrosGrupo(nombreGrupo);
 
-        scanner.close();
     }
 
     private boolean existeAlumnoEnArchivo(String nombreArchivo, int numeroLista) {
@@ -334,7 +328,6 @@ public class SistemaAlumnos {
             e.printStackTrace();
         }
 
-        scanner.close();
     }
 
     public void editarAlumno() {
@@ -477,7 +470,6 @@ public class SistemaAlumnos {
             e.printStackTrace();
         }
 
-        scanner.close();
     }
 
     public void consultarAlumno() {
@@ -535,7 +527,6 @@ public class SistemaAlumnos {
             System.out.println("El alumno con ID " + idAlumno + " no está registrado en el grupo.");
         }
 
-        scanner.close();
     }
 
     public void consultarAlumnos() {
@@ -583,7 +574,6 @@ public class SistemaAlumnos {
             return;
         }
 
-        scanner.close();
     }
 
     public void mostrarGruposDisponibles() {
@@ -744,4 +734,51 @@ public class SistemaAlumnos {
         }
     }
 
+    public static void ordenarRegistrosGrupo(String nombreGrupo) {
+        List<Alumno> alumnos = new ArrayList<>();
+
+        // Leer el archivo y obtener los registros de los alumnos
+        try (BufferedReader br = new BufferedReader(new FileReader(nombreGrupo + ".txt"))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] elementos = linea.split(",");
+                if (elementos.length >= 6) {
+                    try {
+                        int id = Integer.parseInt(elementos[0]);
+                        String nombre = elementos[1];
+                        double calificacion1 = Double.parseDouble(elementos[2]);
+                        double calificacion2 = Double.parseDouble(elementos[3]);
+                        double calificacion3 = Double.parseDouble(elementos[4]);
+                        double calificacionFinal = Double.parseDouble(elementos[5]);
+                        Alumno alumno = new Alumno(id, nombre, calificacion1, calificacion2, calificacion3);
+                        alumno.setCalificacionFinal(calificacionFinal);
+                        alumnos.add(alumno);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Ignorando línea inválida: " + linea);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error al leer el archivo del grupo.");
+            e.printStackTrace();
+            return;
+        }
+
+        // Ordenar los registros de los alumnos por ID en forma ascendente
+        Collections.sort(alumnos, Comparator.comparingInt(Alumno::getNumeroLista));
+
+        // Guardar los registros ordenados en el archivo
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(nombreGrupo + ".txt"))) {
+            for (Alumno alumno : alumnos) {
+                String linea = alumno.getNumeroLista() + "," + alumno.getNombre() + ","
+                        + alumno.getCalificacion1() + "," + alumno.getCalificacion2() + ","
+                        + alumno.getCalificacion3() + "," + alumno.getCalificacionFinal();
+                bw.write(linea);
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Error al guardar los registros ordenados en el archivo.");
+            e.printStackTrace();
+        }
+    }
 }
